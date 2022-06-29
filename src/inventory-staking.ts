@@ -3,10 +3,36 @@ import {
   InventoryStaking,
   Deposit,
   Withdraw,
-  XTokenCreated
+  XTokenCreated,
+  FeesReceived
 } from "../generated/InventoryStaking/InventoryStaking"
-import { getPoolShare, getOrCreateUser, getVaultFromId } from "./helper";
+import { PoolShare } from "../generated/schema";
+import { getPoolShare, getOrCreateUser, getVaultFromId, getOrCreateEarning, getOrCreateFeeReceipt } from "./helper";
+export function handleFeesReceived(event: FeesReceived): void {
 
+  let vault = getVaultFromId(event.params.vaultId);
+  let feeReceipt = getOrCreateFeeReceipt(
+    event.transaction.hash,
+    event.params.vaultId,
+    event.params.amount,
+    event.block.timestamp
+  );
+
+  if(vault != null){
+    if(vault.shares != null){
+      var array : string[] | null = vault.shares;
+      if(array != null) {
+      for(let i = 0; i < array.length; i++) {
+        let poolShare = PoolShare.load(array[i]);
+        if (poolShare) {
+          let earningAmount = poolShare.inventoryShare.div(vault.inventoryStakedTotal).times(event.params.amount).div(BigInt.fromI32(5)).times(BigInt.fromI32(1))
+          let earning = getOrCreateEarning(feeReceipt.id, earningAmount, Address.fromString(poolShare.user));
+        }
+      }
+      }
+    }
+  }
+}
 export function handleDeposit(event: Deposit): void {
  // Increase PoolShare inventory for user for vault
 

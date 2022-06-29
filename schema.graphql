@@ -1,6 +1,7 @@
 type User @entity {
   id: ID!
-  poolsShare: [PoolShare!]
+  poolShares: [PoolShare!] @derivedFrom(field: "user")
+  earnings: [Earning!]  @derivedFrom(field: "user")
 }
 
 type Vault @entity {
@@ -10,6 +11,7 @@ type Vault @entity {
   assetAddress: Bytes!
   inventoryStakedTotal: BigInt!
   liquidityStakedTotal: BigInt!
+  shares: [PoolShare!] @derivedFrom(field: "vault")
   ticker: String # i.e. PUNK
 }
 
@@ -36,7 +38,7 @@ type Earning @entity {
 
 type FeeReceipt @entity {
   id: ID!
-	date: String!
+	timestamp: BigInt!
   vault: Vault!
   amount: BigInt
   feeDistribution: [Earning!] @derivedFrom(field: "feeReceipt")

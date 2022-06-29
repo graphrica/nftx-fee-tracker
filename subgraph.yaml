@@ -62,7 +62,7 @@ dataSources:
     network: mainnet
     source:
       address: "0x3E135c3E981fAe3383A5aE0d323860a34CfAB893"
-      startBlock: 12675820 
+      startBlock: 14026322 
       abi: InventoryStaking
     mapping:
       kind: ethereum/events
@@ -74,6 +74,8 @@ dataSources:
         - name: InventoryStaking
           file: ./abis/InventoryStaking.json
       eventHandlers:
+        - event: FeesReceived(uint256,uint256)
+          handler: handleFeesReceived
         - event: Deposit(uint256,uint256,uint256,uint256,address)
           handler: handleDeposit
         - event: Withdraw(uint256,uint256,uint256,address)

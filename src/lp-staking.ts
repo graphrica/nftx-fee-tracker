@@ -1,19 +1,49 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts"
-import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking"
+import { BigInt, Address } from "@graphprotocol/graph-ts";
+import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
 import {
   LPStaking,
   FeesReceived,
   PoolCreated,
   PoolUpdated,
-  DepositCall
-} from "../generated/LPStaking/LPStaking"
-import { getOrCreateUser, getOrCreateVault, getPoolShare, getVaultFromId } from "./helper"
-
+  DepositCall,
+} from "../generated/LPStaking/LPStaking";
+import { Earning, PoolShare } from "../generated/schema";
+import {
+  getOrCreateEarning,
+  getOrCreateFeeReceipt,
+  getOrCreateUser,
+  getOrCreateVault,
+  getPoolShare,
+  getVaultFromId,
+} from "./helper";
 
 export function handleFeesReceived(event: FeesReceived): void {
   // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same typeÍ
+  // needs to be unique across all entities of the same type
+  let vault = getVaultFromId(event.params.vaultId);
+  let feeReceipt = getOrCreateFeeReceipt(
+    event.transaction.hash,
+    event.params.vaultId,
+    event.params.amount,
+    event.block.timestamp
+  );
 
+  if(vault != null){
+    if(vault.shares != null){
+      var array : string[] | null = vault.shares;
+      if(array != null) {
+        for(let i = 0; i < array.length; i++) {
+          let poolShare = PoolShare.load(array[i]);
+          if (poolShare) {
+  
+            let earningAmount = poolShare.liquidityShare.div(vault.liquidityStakedTotal).times(event.params.amount).div(BigInt.fromI32(5)).times(BigInt.fromI32(4))
+            let earning = getOrCreateEarning(feeReceipt.id, earningAmount, Address.fromString(poolShare.user));
+          }
+        }
+      }
+    }
+  }
+  
 
   // Note: If a handler doesn't require existing field values, it is faster
   // _not_ to load the entity from the store. Instead, create it fresh with
@@ -65,11 +95,15 @@ export function handlePoolUpdated(event: PoolUpdated): void {}
 export function handleDeposit(call: DepositCall): void {
   let user = getOrCreateUser(call.from);
   let vault = getVaultFromId(call.inputs.vaultId);
-  if(vault) {
-    vault.liquidityStakedTotal =  vault.liquidityStakedTotal.plus(call.inputs.amount);
+  if (vault) {
+    vault.liquidityStakedTotal = vault.liquidityStakedTotal.plus(
+      call.inputs.amount
+    );
     vault.save();
     let poolShare = getPoolShare(Address.fromBytes(vault.address), call.from);
-    poolShare.liquidityShare = poolShare.liquidityShare.plus(call.inputs.amount)
+    poolShare.liquidityShare = poolShare.liquidityShare.plus(
+      call.inputs.amount
+    );
     poolShare.save();
   }
 }
@@ -77,11 +111,15 @@ export function handleDeposit(call: DepositCall): void {
 export function handleWithdraw(call: WithdrawCall): void {
   let user = getOrCreateUser(call.from);
   let vault = getVaultFromId(call.inputs.vaultId);
-  if(vault) {
-    vault.liquidityStakedTotal =  vault.liquidityStakedTotal.minus(call.inputs._share);
+  if (vault) {
+    vault.liquidityStakedTotal = vault.liquidityStakedTotal.minus(
+      call.inputs._share
+    );
     vault.save();
     let poolShare = getPoolShare(Address.fromBytes(vault.address), call.from);
-    poolShare.liquidityShare = poolShare.liquidityShare.minus(call.inputs._share)
+    poolShare.liquidityShare = poolShare.liquidityShare.minus(
+      call.inputs._share
+    );
     poolShare.save();
   }
 }

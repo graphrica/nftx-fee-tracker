@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {FeeReceipt, PoolShare, User, Vault, Earning, VaultAddressLookup} from "../generated/schema";
 
 export function getOrCreateUser(address : Address) : User {
@@ -74,13 +74,13 @@ export function createOrUpdatePoolShare(vaultAddress: Address, userAddress: Addr
     return poolShare;
 }
 
-export function getOrCreateFeeReceipt(txHash : string, vaultAddress: string, amount: BigInt, timestamp: string) : FeeReceipt {
-    let feeReceipt = FeeReceipt.load(txHash.toString());
+export function getOrCreateFeeReceipt(txHash : Bytes, vaultId: BigInt, amount: BigInt, timestamp: BigInt) : FeeReceipt {
+    let feeReceipt = FeeReceipt.load(txHash.toHexString().concat("-").concat(vaultId.toHexString()));
     if(!feeReceipt){
 
-        feeReceipt = new FeeReceipt(txHash.toString());
-        feeReceipt.date = timestamp;
-        feeReceipt.vault = vaultAddress;
+        feeReceipt = new FeeReceipt(txHash.toHexString().concat("-").concat(vaultId.toHexString()));
+        feeReceipt.timestamp = timestamp;
+        feeReceipt.vault = vaultId.toHexString();
         feeReceipt.amount = amount;
         feeReceipt.save();
     }
@@ -88,10 +88,10 @@ export function getOrCreateFeeReceipt(txHash : string, vaultAddress: string, amo
 }
 
 
-export function getOrCreateEarning(address : Address, feeReceiptId: string, amount : BigInt, userAddress: Address) : Earning {
+export function getOrCreateEarning(feeReceiptId: string, amount : BigInt, userAddress: Address) : Earning {
     let earning = Earning.load(feeReceiptId.concat("-").concat(userAddress.toHexString()));
     if(!earning){
-        earning = new Earning(address.toHexString());
+        earning = new Earning(feeReceiptId.concat("-").concat(userAddress.toHexString()));
         earning.amount = amount;
         earning.feeReceipt = feeReceiptId;
         earning.user = userAddress.toHexString();
