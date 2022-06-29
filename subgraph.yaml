@@ -1,0 +1,119 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: VaultFactory
+    network: mainnet
+    source:
+      address: "0xBE86f647b167567525cCAAfcd6f881F1Ee558216"
+      startBlock: 12675820 
+      abi: VaultFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: VaultFactory
+          file: ./abis/VaultFactory.json
+        - name: VaultTemplate
+          file: ./abis/VaultTemplate.json
+      eventHandlers:
+        - event: DisableVaultFees(uint256)
+          handler: handleDisableVaultFees
+        - event: FeeExclusion(address,bool)
+          handler: handleFeeExclusion
+        - event: NewVault(indexed uint256,address,address)
+          handler: handleNewVault
+      file: ./src/vault-factory.ts
+  - kind: ethereum
+    name: LPStaking
+    network: mainnet
+    source:
+      address: "0x688c3E4658B5367da06fd629E41879beaB538E37"
+      startBlock: 12675820
+      abi: LPStaking
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: LPStaking
+          file: ./abis/LPStaking.json
+      callHandlers:
+        - function: deposit(uint256,uint256)
+          handler: handleDeposit
+        - function: withdraw(uint256,uint256)
+          handler: handleWithdraw
+      eventHandlers:
+        - event: FeesReceived(uint256,uint256)
+          handler: handleFeesReceived
+        - event: PoolCreated(uint256,address)
+          handler: handlePoolCreated
+        - event: PoolUpdated(uint256,address)
+          handler: handlePoolUpdated
+      file: ./src/lp-staking.ts
+  - kind: ethereum
+    name: InventoryStaking
+    network: mainnet
+    source:
+      address: "0x3E135c3E981fAe3383A5aE0d323860a34CfAB893"
+      startBlock: 12675820 
+      abi: InventoryStaking
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: InventoryStaking
+          file: ./abis/InventoryStaking.json
+      eventHandlers:
+        - event: Deposit(uint256,uint256,uint256,uint256,address)
+          handler: handleDeposit
+        - event: Withdraw(uint256,uint256,uint256,address)
+          handler: handleWithdraw
+        - event: XTokenCreated(uint256,address,address)
+          handler: handleXTokenCreated
+      file: ./src/inventory-staking.ts   
+templates:
+  - kind: ethereum/contract
+    name: VaultTemplate
+    network: mainnet
+    source:
+      abi: VaultTemplate
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: VaultTemplate
+          file: ./abis/VaultTemplate.json
+      eventHandlers:
+        # - event: EnableMintUpdated(bool)
+        #   handler: handleEnableMintUpdated
+        # - event: EnableRandomRedeemUpdated(bool)
+        #   handler: handleEnableRandomRedeemUpdated
+        # - event: EnableRandomSwapUpdated(bool)
+        #   handler: handleEnableRandomSwapUpdated
+        # - event: EnableTargetRedeemUpdated(bool)
+        #   handler: handleEnableTargetRedeemUpdated
+        # - event: EnableTargetSwapUpdated(bool)
+        #   handler: handleEnableTargetSwapUpdated
+        - event: Minted(uint256[],uint256[],address)
+          handler: handleMinted
+        - event: Redeemed(uint256[],uint256[],address)
+          handler: handleRedeemed
+        - event: Swapped(uint256[],uint256[],uint256[],uint256[],address)
+          handler: handleSwapped
+        - event: VaultInit(indexed uint256,address,bool,bool)
+          handler: handleVaultInit
+      file: ./src/vault-template.ts
+  

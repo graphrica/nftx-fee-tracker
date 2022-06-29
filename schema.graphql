@@ -1,0 +1,43 @@
+type User @entity {
+  id: ID!
+  poolsShare: [PoolShare!]
+}
+
+type Vault @entity {
+  id: ID! # Address of Vault
+  vaultId: BigInt!
+  address: Bytes!
+  assetAddress: Bytes!
+  inventoryStakedTotal: BigInt!
+  liquidityStakedTotal: BigInt!
+  ticker: String # i.e. PUNK
+}
+
+type VaultAddressLookup @entity {
+  id: ID!
+  vault: Vault!
+}
+
+
+type PoolShare @entity {
+  id: ID!
+  vault: Vault!
+  user: User!
+  inventoryShare: BigInt!
+  liquidityShare: BigInt!
+}
+
+type Earning @entity {
+  id: ID!
+  feeReceipt: FeeReceipt!
+  user: User!
+  amount: BigInt
+}
+
+type FeeReceipt @entity {
+  id: ID!
+	date: String!
+  vault: Vault!
+  amount: BigInt
+  feeDistribution: [Earning!] @derivedFrom(field: "feeReceipt")
+}
