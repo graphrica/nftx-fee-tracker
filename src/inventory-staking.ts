@@ -11,6 +11,7 @@ import {
   getVaultFromId,
   getOrCreateEarning,
   getOrCreateFeeReceipt,
+  updateOrCreateUserVaultFeeAggregate,
 } from "./helper";
 export function handleFeesReceived(event: FeesReceived): void {
   let vault = getVaultFromId(event.params.vaultId);
@@ -29,16 +30,27 @@ export function handleFeesReceived(event: FeesReceived): void {
         for (let i = 0; i < array.length; i++) {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
-            
             if (poolShare.inventoryShare != BigInt.fromI32(0)) {
-              let userShare = BigDecimal.fromString(poolShare.inventoryShare.toString())
-              .div(BigDecimal.fromString(vault.inventoryStakedTotal.toString()));
+              let userShare = BigDecimal.fromString(
+                poolShare.inventoryShare.toString()
+              ).div(
+                BigDecimal.fromString(vault.inventoryStakedTotal.toString())
+              );
 
-              let earningAmount = userShare.times(BigDecimal.fromString(event.params.amount.toString()))
+              let earningAmount = userShare.times(
+                BigDecimal.fromString(event.params.amount.toString())
+              );
               getOrCreateEarning(
                 feeReceipt.id,
                 earningAmount,
                 Address.fromString(poolShare.user)
+              );
+
+              updateOrCreateUserVaultFeeAggregate(
+                vault.id,
+                earningAmount,
+                Address.fromString(poolShare.user),
+                true
               );
             }
           }

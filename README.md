@@ -79,13 +79,20 @@ type VaultAddressLookup @entity {
   vault: Vault!
 }
 
-
 type PoolShare @entity {
   id: ID!
   vault: Vault!
   user: User!
   inventoryShare: BigInt!
   liquidityShare: BigInt!
+}
+
+type UserVaultFeeAggregate @entity {
+  id: ID! # UserID - Vault - Inventory/LP
+  isInventory: Boolean!
+  user: User!
+  vault: Vault!
+  aggregatedVaultFees: BigDecimal!
 }
 
 type Earning @entity {
@@ -111,4 +118,4 @@ Coming soon
 
 ___
 
-Made with 💚 by Graphrica
+Made with 💚 by Graphrica 🌍

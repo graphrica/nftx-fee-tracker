@@ -1,9 +1,6 @@
-import { BigInt, Address , BigDecimal } from "@graphprotocol/graph-ts";
+import { BigInt, Address, BigDecimal } from "@graphprotocol/graph-ts";
 import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
-import {
-  FeesReceived,
-  DepositCall,
-} from "../generated/LPStaking/LPStaking";
+import { FeesReceived, DepositCall } from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
 import {
   getOrCreateEarning,
@@ -11,11 +8,10 @@ import {
   getOrCreateUser,
   getPoolShare,
   getVaultFromId,
+  updateOrCreateUserVaultFeeAggregate,
 } from "./helper";
 
 export function handleFeesReceived(event: FeesReceived): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
   let vault = getVaultFromId(event.params.vaultId);
   let feeReceipt = getOrCreateFeeReceipt(
     event.transaction.hash,
@@ -33,15 +29,27 @@ export function handleFeesReceived(event: FeesReceived): void {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
             if (poolShare.liquidityShare != BigInt.fromI32(0)) {
-              let userShare = BigDecimal.fromString(poolShare.liquidityShare.toString()).div(
-                BigDecimal.fromString(vault.liquidityStakedTotal.toString()));
+              let userShare = BigDecimal.fromString(
+                poolShare.liquidityShare.toString()
+              ).div(
+                BigDecimal.fromString(vault.liquidityStakedTotal.toString())
+              );
 
-              let earningAmount = userShare.times(BigDecimal.fromString(event.params.amount.toString()))
-      
-              let earning = getOrCreateEarning(
+              let earningAmount = userShare.times(
+                BigDecimal.fromString(event.params.amount.toString())
+              );
+
+              getOrCreateEarning(
                 feeReceipt.id,
                 earningAmount,
                 Address.fromString(poolShare.user)
+              );
+
+              updateOrCreateUserVaultFeeAggregate(
+                vault.id,
+                earningAmount,
+                Address.fromString(poolShare.user),
+                false
               );
             }
           }

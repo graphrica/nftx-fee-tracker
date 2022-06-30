@@ -36,6 +36,14 @@ type Earning @entity {
   amount: BigDecimal
 }
 
+type UserVaultFeeAggregate @entity {
+  id: ID! # UserID - Vault - Inventory/LP
+  isInventory: Boolean!
+  user: User!
+  vault: Vault!
+  aggregatedVaultFees: BigDecimal!
+}
+
 type FeeReceipt @entity {
   id: ID!
 	timestamp: BigInt!
