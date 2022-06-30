@@ -3,6 +3,7 @@ import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
 import { FeesReceived, DepositCall } from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
 import {
+  calculateEarningAmount,
   getOrCreateEarning,
   getOrCreateFeeReceipt,
   getOrCreateUser,
@@ -29,16 +30,8 @@ export function handleFeesReceived(event: FeesReceived): void {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
             if (poolShare.liquidityShare != BigInt.fromI32(0)) {
-              let userShare = BigDecimal.fromString(
-                poolShare.liquidityShare.toString()
-              ).div(
-                BigDecimal.fromString(vault.liquidityStakedTotal.toString())
-              );
-
-              let earningAmount = userShare.times(
-                BigDecimal.fromString(event.params.amount.toString())
-              );
-
+              let earningAmount = calculateEarningAmount(vault.liquidityStakedTotal, poolShare.liquidityShare, event.params.amount);
+             
               getOrCreateEarning(
                 feeReceipt.id,
                 earningAmount,
@@ -60,7 +53,7 @@ export function handleFeesReceived(event: FeesReceived): void {
 }
 
 export function handleDeposit(call: DepositCall): void {
-  let user = getOrCreateUser(call.from);
+  getOrCreateUser(call.from);
   let vault = getVaultFromId(call.inputs.vaultId);
   if (vault) {
     vault.liquidityStakedTotal = vault.liquidityStakedTotal.plus(
@@ -80,7 +73,7 @@ export function handleDeposit(call: DepositCall): void {
 }
 
 export function handleWithdraw(call: WithdrawCall): void {
-  let user = getOrCreateUser(call.from);
+  getOrCreateUser(call.from);
   let vault = getVaultFromId(call.inputs.vaultId);
   if (vault) {
     vault.liquidityStakedTotal = vault.liquidityStakedTotal.minus(

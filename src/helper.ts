@@ -9,6 +9,15 @@ import {
   UserVaultFeeAggregate,
 } from "../generated/schema";
 
+export const calculateEarningAmount = (
+  totalStake: BigInt,
+  userStake: BigInt,
+  feeAmount: BigInt
+): BigDecimal =>
+  BigDecimal.fromString(userStake.toString())
+    .div(BigDecimal.fromString(totalStake.toString()))
+    .times(BigDecimal.fromString(feeAmount.toString()));
+
 export function getOrCreateUser(address: Address): User {
   let user = User.load(address.toHexString());
   if (!user) {
