@@ -1,4 +1,4 @@
-import { BigInt, Address, BigDecimal } from "@graphprotocol/graph-ts";
+import { BigInt, Address } from "@graphprotocol/graph-ts";
 import {
   Deposit,
   Withdraw,

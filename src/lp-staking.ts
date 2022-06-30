@@ -1,4 +1,4 @@
-import { BigInt, Address, BigDecimal } from "@graphprotocol/graph-ts";
+import { BigInt, Address } from "@graphprotocol/graph-ts";
 import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
 import { FeesReceived, DepositCall } from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
