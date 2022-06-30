@@ -91,16 +91,6 @@ export function handleFeesReceived(event: FeesReceived): void {
   // - contract.vaultStakingInfo(...)
 }
 
-// export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
-
-export function handlePoolCreated(event: PoolCreated): void {}
-
-export function handlePoolUpdated(event: PoolUpdated): void {}
-
-// export function handleSetIsGuardian(event: SetIsGuardian): void {}
-
-// export function handleSetPaused(event: SetPaused): void {}
-
 export function handleDeposit(call: DepositCall): void {
   let user = getOrCreateUser(call.from);
   let vault = getVaultFromId(call.inputs.vaultId);

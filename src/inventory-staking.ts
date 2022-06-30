@@ -1,9 +1,7 @@
 import { BigInt, Address, BigDecimal } from "@graphprotocol/graph-ts";
 import {
-  InventoryStaking,
   Deposit,
   Withdraw,
-  XTokenCreated,
   FeesReceived,
 } from "../generated/InventoryStaking/InventoryStaking";
 import { PoolShare } from "../generated/schema";
@@ -31,6 +29,7 @@ export function handleFeesReceived(event: FeesReceived): void {
         for (let i = 0; i < array.length; i++) {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
+            
             if (poolShare.inventoryShare != BigInt.fromI32(0)) {
               let userShare = BigDecimal.fromString(poolShare.inventoryShare.toString())
               .div(BigDecimal.fromString(vault.inventoryStakedTotal.toString()));
@@ -101,14 +100,6 @@ export function handleDeposit(event: Deposit): void {
   // - contract.xTokenShareValue(...)
 }
 
-// export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
-
-// export function handleSetIsGuardian(event: SetIsGuardian): void {}
-
-// export function handleSetPaused(event: SetPaused): void {}
-
-// export function handleUpgraded(event: Upgraded): void {}
-
 export function handleWithdraw(event: Withdraw): void {
   let user = getOrCreateUser(event.params.sender);
   let vault = getVaultFromId(event.params.vaultId);
@@ -128,5 +119,3 @@ export function handleWithdraw(event: Withdraw): void {
   }
   // Decrease PoolShare inventory for user for vault
 }
-
-export function handleXTokenCreated(event: XTokenCreated): void {}

@@ -16,7 +16,7 @@ import {
 } from "../generated/VaultFactory/VaultFactory"
 import { VaultTemplate } from "../generated/VaultTemplate/VaultTemplate";
 import { VaultTemplate as VaultTemplateContract } from "../generated/templates";
-import { getOrCreateVault } from "./helper"
+import { getOrCreateUser, getOrCreateVault } from "./helper"
 
 export function handleDisableVaultFees(event: DisableVaultFees): void {
 
@@ -58,8 +58,6 @@ export function handleDisableVaultFees(event: DisableVaultFees): void {
   // - contract.zapContract(...)
 }
 
-export function handleFeeExclusion(event: FeeExclusion): void {}
-
 export function handleNewVault(event: NewVault): void {
 
   //Create new vault
@@ -72,10 +70,4 @@ export function handleNewVault(event: NewVault): void {
   getOrCreateVault(event.params.vaultAddress, event.params.vaultId, ticker, event.params.assetAddress);
 }
 
-export function handleSetPaused(event: SetPaused): void {}
 
-// export function handleUpdateFactoryFees(event: UpdateFactoryFees): void {}
-
-// export function handleUpdateVaultFees(event: UpdateVaultFees): void {}
-
-// export function handleUpgraded(event: Upgraded): void {}

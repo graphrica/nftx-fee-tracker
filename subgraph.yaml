@@ -21,10 +21,6 @@ dataSources:
         - name: VaultTemplate
           file: ./abis/VaultTemplate.json
       eventHandlers:
-        - event: DisableVaultFees(uint256)
-          handler: handleDisableVaultFees
-        - event: FeeExclusion(address,bool)
-          handler: handleFeeExclusion
         - event: NewVault(indexed uint256,address,address)
           handler: handleNewVault
       file: ./src/vault-factory.ts
@@ -52,10 +48,6 @@ dataSources:
       eventHandlers:
         - event: FeesReceived(uint256,uint256)
           handler: handleFeesReceived
-        - event: PoolCreated(uint256,address)
-          handler: handlePoolCreated
-        - event: PoolUpdated(uint256,address)
-          handler: handlePoolUpdated
       file: ./src/lp-staking.ts
   - kind: ethereum
     name: InventoryStaking
@@ -80,6 +72,4 @@ dataSources:
           handler: handleDeposit
         - event: Withdraw(uint256,uint256,uint256,address)
           handler: handleWithdraw
-        - event: XTokenCreated(uint256,address,address)
-          handler: handleXTokenCreated
       file: ./src/inventory-staking.ts   
