@@ -39,6 +39,7 @@ type Earning @entity {
 type FeeReceipt @entity {
   id: ID!
 	timestamp: BigInt!
+  isInventory: Boolean!
   vault: Vault!
   amount: BigInt
   feeDistribution: [Earning!] @derivedFrom(field: "feeReceipt")

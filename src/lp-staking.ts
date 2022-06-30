@@ -25,7 +25,8 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.transaction.hash,
     event.params.vaultId,
     event.params.amount,
-    event.block.timestamp
+    event.block.timestamp,
+    false
   );
 
   if (vault != null) {

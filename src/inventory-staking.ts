@@ -20,7 +20,8 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.transaction.hash,
     event.params.vaultId,
     event.params.amount,
-    event.block.timestamp
+    event.block.timestamp,
+    true
   );
 
   if (vault != null) {
@@ -55,7 +56,7 @@ export function handleDeposit(event: Deposit): void {
   let vault = getVaultFromId(event.params.vaultId);
   if (vault) {
     vault.inventoryStakedTotal = vault.inventoryStakedTotal.plus(
-      event.params.baseTokenAmount
+      event.params.xTokenAmount
     );
     vault.save();
     let poolShare = getPoolShare(
@@ -63,7 +64,7 @@ export function handleDeposit(event: Deposit): void {
       event.params.sender
     );
     poolShare.inventoryShare = poolShare.inventoryShare.plus(
-      event.params.baseTokenAmount
+      event.params.xTokenAmount
     );
     poolShare.save();
     var shares = vault.shares;
@@ -113,7 +114,7 @@ export function handleWithdraw(event: Withdraw): void {
   let vault = getVaultFromId(event.params.vaultId);
   if (vault) {
     vault.inventoryStakedTotal = vault.inventoryStakedTotal.minus(
-      event.params.baseTokenAmount
+      event.params.xTokenAmount
     );
     vault.save();
     let poolShare = getPoolShare(
@@ -121,7 +122,7 @@ export function handleWithdraw(event: Withdraw): void {
       event.params.sender
     );
     poolShare.inventoryShare = poolShare.inventoryShare.minus(
-      event.params.baseTokenAmount
+      event.params.xTokenAmount
     );
     poolShare.save();
   }

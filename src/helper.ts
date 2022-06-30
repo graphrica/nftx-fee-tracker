@@ -75,7 +75,7 @@ export function createOrUpdatePoolShare(vaultAddress: Address, userAddress: Addr
     return poolShare;
 }
 
-export function getOrCreateFeeReceipt(txHash : Bytes, vaultId: BigInt, amount: BigInt, timestamp: BigInt) : FeeReceipt {
+export function getOrCreateFeeReceipt(txHash : Bytes, vaultId: BigInt, amount: BigInt, timestamp: BigInt, isInventory: boolean) : FeeReceipt {
     let feeReceipt = FeeReceipt.load(txHash.toHexString().concat("-").concat(vaultId.toHexString()));
     if(!feeReceipt){
 
@@ -83,6 +83,7 @@ export function getOrCreateFeeReceipt(txHash : Bytes, vaultId: BigInt, amount: B
         feeReceipt.timestamp = timestamp;
         feeReceipt.vault = vaultId.toHexString();
         feeReceipt.amount = amount;
+        feeReceipt.isInventory = isInventory;
         feeReceipt.save();
     }
     return feeReceipt;
