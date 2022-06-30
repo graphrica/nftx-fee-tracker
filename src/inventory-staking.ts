@@ -67,8 +67,9 @@ export function handleDeposit(event: Deposit): void {
       event.params.baseTokenAmount
     );
     poolShare.save();
-
-    vault.shares.push(poolShare.id);
+    var shares = vault.shares;
+    shares.push(poolShare.id);
+    vault.shares = shares;
     vault.save();
   }
   // Note: If a handler doesn't require existing field values, it is faster
@@ -124,9 +125,6 @@ export function handleWithdraw(event: Withdraw): void {
       event.params.baseTokenAmount
     );
     poolShare.save();
-
-    vault.shares.push(poolShare.id);
-    vault.save();
   }
   // Decrease PoolShare inventory for user for vault
 }

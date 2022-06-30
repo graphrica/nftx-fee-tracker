@@ -113,7 +113,9 @@ export function handleDeposit(call: DepositCall): void {
       call.inputs.amount
     );
     poolShare.save();
-    vault.shares.push(poolShare.id);
+    var shares = vault.shares;
+    shares.push(poolShare.id);
+    vault.shares = shares;
     vault.save();
   }
 }
@@ -131,7 +133,5 @@ export function handleWithdraw(call: WithdrawCall): void {
       call.inputs._share
     );
     poolShare.save();
-    vault.shares.push(poolShare.id);
-    vault.save();
   }
 }
