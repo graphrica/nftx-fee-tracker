@@ -28,22 +28,30 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.block.timestamp
   );
 
-  if(vault != null){
-    if(vault.shares != null){
-      var array : string[] | null = vault.shares;
-      if(array != null) {
-        for(let i = 0; i < array.length; i++) {
+  if (vault != null) {
+    if (vault.shares != null) {
+      var array: string[] | null = vault.shares;
+      if (array != null) {
+        for (let i = 0; i < array.length; i++) {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
-  
-            let earningAmount = poolShare.liquidityShare.div(vault.liquidityStakedTotal).times(event.params.amount).div(BigInt.fromI32(5)).times(BigInt.fromI32(4))
-            let earning = getOrCreateEarning(feeReceipt.id, earningAmount, Address.fromString(poolShare.user));
+            if (poolShare.liquidityShare != BigInt.fromI32(0)) {
+              let earningAmount = poolShare.liquidityShare
+                .div(vault.liquidityStakedTotal)
+                .times(event.params.amount)
+                .div(BigInt.fromI32(5))
+                .times(BigInt.fromI32(4));
+              let earning = getOrCreateEarning(
+                feeReceipt.id,
+                earningAmount,
+                Address.fromString(poolShare.user)
+              );
+            }
           }
         }
       }
     }
   }
-  
 
   // Note: If a handler doesn't require existing field values, it is faster
   // _not_ to load the entity from the store. Instead, create it fresh with
@@ -105,9 +113,8 @@ export function handleDeposit(call: DepositCall): void {
       call.inputs.amount
     );
     poolShare.save();
-    vault.shares.push(poolShare.id)
+    vault.shares.push(poolShare.id);
     vault.save();
-    
   }
 }
 
@@ -124,7 +131,7 @@ export function handleWithdraw(call: WithdrawCall): void {
       call.inputs._share
     );
     poolShare.save();
-    vault.shares.push(poolShare.id)
+    vault.shares.push(poolShare.id);
     vault.save();
   }
 }

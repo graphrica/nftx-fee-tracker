@@ -1,15 +1,20 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts"
+import { BigInt, Address } from "@graphprotocol/graph-ts";
 import {
   InventoryStaking,
   Deposit,
   Withdraw,
   XTokenCreated,
-  FeesReceived
-} from "../generated/InventoryStaking/InventoryStaking"
+  FeesReceived,
+} from "../generated/InventoryStaking/InventoryStaking";
 import { PoolShare } from "../generated/schema";
-import { getPoolShare, getOrCreateUser, getVaultFromId, getOrCreateEarning, getOrCreateFeeReceipt } from "./helper";
+import {
+  getPoolShare,
+  getOrCreateUser,
+  getVaultFromId,
+  getOrCreateEarning,
+  getOrCreateFeeReceipt,
+} from "./helper";
 export function handleFeesReceived(event: FeesReceived): void {
-
   let vault = getVaultFromId(event.params.vaultId);
   let feeReceipt = getOrCreateFeeReceipt(
     event.transaction.hash,
@@ -18,38 +23,53 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.block.timestamp
   );
 
-  if(vault != null){
-    if(vault.shares != null){
-      var array : string[] | null = vault.shares;
-      if(array != null) {
-      for(let i = 0; i < array.length; i++) {
-        let poolShare = PoolShare.load(array[i]);
-        if (poolShare) {
-          let earningAmount = poolShare.inventoryShare.div(vault.inventoryStakedTotal).times(event.params.amount).div(BigInt.fromI32(5)).times(BigInt.fromI32(1))
-          let earning = getOrCreateEarning(feeReceipt.id, earningAmount, Address.fromString(poolShare.user));
+  if (vault != null) {
+    if (vault.shares != null) {
+      var array: string[] = vault.shares;
+      if (array != null) {
+        for (let i = 0; i < array.length; i++) {
+          let poolShare = PoolShare.load(array[i]);
+          if (poolShare) {
+            if (poolShare.inventoryShare != BigInt.fromI32(0)) {
+              let earningAmount = poolShare.inventoryShare
+                .div(vault.inventoryStakedTotal)
+                .times(event.params.amount)
+                .div(BigInt.fromI32(5))
+                .times(BigInt.fromI32(1));
+              let earning = getOrCreateEarning(
+                feeReceipt.id,
+                earningAmount,
+                Address.fromString(poolShare.user)
+              );
+            }
+          }
         }
-      }
       }
     }
   }
 }
 export function handleDeposit(event: Deposit): void {
- // Increase PoolShare inventory for user for vault
+  // Increase PoolShare inventory for user for vault
 
   let user = getOrCreateUser(event.params.sender);
 
   let vault = getVaultFromId(event.params.vaultId);
-  if(vault) {
-    vault.inventoryStakedTotal =  vault.inventoryStakedTotal.plus(event.params.baseTokenAmount);
+  if (vault) {
+    vault.inventoryStakedTotal = vault.inventoryStakedTotal.plus(
+      event.params.baseTokenAmount
+    );
     vault.save();
-    let poolShare = getPoolShare(Address.fromBytes(vault.address), event.params.sender);
-    poolShare.inventoryShare = poolShare.inventoryShare.plus(event.params.baseTokenAmount)
+    let poolShare = getPoolShare(
+      Address.fromBytes(vault.address),
+      event.params.sender
+    );
+    poolShare.inventoryShare = poolShare.inventoryShare.plus(
+      event.params.baseTokenAmount
+    );
     poolShare.save();
-    
-    vault.shares.push(poolShare.id)
+
+    vault.shares.push(poolShare.id);
     vault.save();
-   
-    
   }
   // Note: If a handler doesn't require existing field values, it is faster
   // _not_ to load the entity from the store. Instead, create it fresh with
@@ -91,16 +111,22 @@ export function handleDeposit(event: Deposit): void {
 export function handleWithdraw(event: Withdraw): void {
   let user = getOrCreateUser(event.params.sender);
   let vault = getVaultFromId(event.params.vaultId);
-  if(vault) {
-    vault.inventoryStakedTotal =  vault.inventoryStakedTotal.minus(event.params.baseTokenAmount);
+  if (vault) {
+    vault.inventoryStakedTotal = vault.inventoryStakedTotal.minus(
+      event.params.baseTokenAmount
+    );
     vault.save();
-    let poolShare = getPoolShare(Address.fromBytes(vault.address), event.params.sender);
-    poolShare.inventoryShare = poolShare.inventoryShare.minus(event.params.baseTokenAmount)
+    let poolShare = getPoolShare(
+      Address.fromBytes(vault.address),
+      event.params.sender
+    );
+    poolShare.inventoryShare = poolShare.inventoryShare.minus(
+      event.params.baseTokenAmount
+    );
     poolShare.save();
-    
-    vault.shares.push(poolShare.id)
+
+    vault.shares.push(poolShare.id);
     vault.save();
-   
   }
   // Decrease PoolShare inventory for user for vault
 }

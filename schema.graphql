@@ -11,7 +11,7 @@ type Vault @entity {
   assetAddress: Bytes!
   inventoryStakedTotal: BigInt!
   liquidityStakedTotal: BigInt!
-  shares: [PoolShare!]!
+  shares: [String!]! ##PoolShareID
   ticker: String # i.e. PUNK
 }
 
