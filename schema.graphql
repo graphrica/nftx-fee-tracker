@@ -11,7 +11,7 @@ type Vault @entity {
   assetAddress: Bytes!
   inventoryStakedTotal: BigInt!
   liquidityStakedTotal: BigInt!
-  shares: [PoolShare!] @derivedFrom(field: "vault")
+  shares: [PoolShare!]!
   ticker: String # i.e. PUNK
 }
 

@@ -105,6 +105,17 @@ export function handleDeposit(call: DepositCall): void {
       call.inputs.amount
     );
     poolShare.save();
+    if(vault.shares != null){
+      vault.shares.push(poolShare.id)
+      vault.save();
+    }
+    else
+    {
+      var shares = [poolShare.id];
+      vault.shares = shares;
+      vault.save();
+    }
+    
   }
 }
 
@@ -121,5 +132,15 @@ export function handleWithdraw(call: WithdrawCall): void {
       call.inputs._share
     );
     poolShare.save();
+    if(vault.shares != null){
+      vault.shares.push(poolShare.id)
+      vault.save();
+    }
+    else
+    {
+      var shares = [poolShare.id];
+      vault.shares = shares;
+      vault.save();
+    }
   }
 }

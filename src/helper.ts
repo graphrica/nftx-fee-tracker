@@ -39,6 +39,7 @@ export function getOrCreateVault(address : Address, vaultId: BigInt, ticker: str
         vault.assetAddress = assetAddress;
         vault.inventoryStakedTotal = BigInt.fromI32(0);
         vault.liquidityStakedTotal = BigInt.fromI32(0);
+        vault.shares = [createOrUpdatePoolShare(address, address, BigInt.fromI32(0),BigInt.fromI32(0)).id]
         vault.save();
         let vaultAddressLookup = new VaultAddressLookup(address.toHexString());
         vaultAddressLookup.vault = vault.id;
