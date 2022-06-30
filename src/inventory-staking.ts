@@ -45,16 +45,9 @@ export function handleDeposit(event: Deposit): void {
     let poolShare = getPoolShare(Address.fromBytes(vault.address), event.params.sender);
     poolShare.inventoryShare = poolShare.inventoryShare.plus(event.params.baseTokenAmount)
     poolShare.save();
-    if(vault.shares != null){
-      vault.shares.push(poolShare.id)
-      vault.save();
-    }
-    else
-    {
-      var shares = [poolShare.id];
-      vault.shares = shares;
-      vault.save();
-    }
+    
+    vault.shares.push(poolShare.id)
+    vault.save();
    
     
   }
@@ -104,16 +97,10 @@ export function handleWithdraw(event: Withdraw): void {
     let poolShare = getPoolShare(Address.fromBytes(vault.address), event.params.sender);
     poolShare.inventoryShare = poolShare.inventoryShare.minus(event.params.baseTokenAmount)
     poolShare.save();
-    if(vault.shares != null){
-      vault.shares.push(poolShare.id)
-      vault.save();
-    }
-    else
-    {
-      var shares = [poolShare.id];
-      vault.shares = shares;
-      vault.save();
-    }
+    
+    vault.shares.push(poolShare.id)
+    vault.save();
+   
   }
   // Decrease PoolShare inventory for user for vault
 }
