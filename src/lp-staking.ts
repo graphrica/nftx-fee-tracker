@@ -1,4 +1,4 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
+import { BigInt, Address , BigDecimal } from "@graphprotocol/graph-ts";
 import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
 import {
   LPStaking,
@@ -36,11 +36,11 @@ export function handleFeesReceived(event: FeesReceived): void {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
             if (poolShare.liquidityShare != BigInt.fromI32(0)) {
-              let earningAmount = poolShare.liquidityShare
-                .div(vault.liquidityStakedTotal)
-                .times(event.params.amount)
-                .div(BigInt.fromI32(5))
-                .times(BigInt.fromI32(4));
+              let userShare = BigDecimal.fromString(poolShare.liquidityShare.toString()).div(
+                BigDecimal.fromString(vault.liquidityStakedTotal.toString()));
+
+              let earningAmount = userShare.times(BigDecimal.fromString(event.params.amount.toString()))
+      
               let earning = getOrCreateEarning(
                 feeReceipt.id,
                 earningAmount,

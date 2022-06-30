@@ -33,7 +33,7 @@ type Earning @entity {
   id: ID!
   feeReceipt: FeeReceipt!
   user: User!
-  amount: BigInt
+  amount: BigDecimal
 }
 
 type FeeReceipt @entity {

@@ -1,4 +1,4 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
+import { BigInt, Address, BigDecimal } from "@graphprotocol/graph-ts";
 import {
   InventoryStaking,
   Deposit,
@@ -31,11 +31,10 @@ export function handleFeesReceived(event: FeesReceived): void {
           let poolShare = PoolShare.load(array[i]);
           if (poolShare) {
             if (poolShare.inventoryShare != BigInt.fromI32(0)) {
-              let earningAmount = poolShare.inventoryShare
-                .div(vault.inventoryStakedTotal)
-                .times(event.params.amount)
-                .div(BigInt.fromI32(5))
-                .times(BigInt.fromI32(1));
+              let userShare = BigDecimal.fromString(poolShare.inventoryShare.toString())
+              .div(BigDecimal.fromString(vault.inventoryStakedTotal.toString()));
+
+            let earningAmount = userShare.times(BigDecimal.fromString(event.params.amount.toString()))
               let earning = getOrCreateEarning(
                 feeReceipt.id,
                 earningAmount,

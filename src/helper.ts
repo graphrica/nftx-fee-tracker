@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, BigDecimal } from "@graphprotocol/graph-ts";
 import {FeeReceipt, PoolShare, User, Vault, Earning, VaultAddressLookup} from "../generated/schema";
 
 export function getOrCreateUser(address : Address) : User {
@@ -89,7 +89,7 @@ export function getOrCreateFeeReceipt(txHash : Bytes, vaultId: BigInt, amount: B
 }
 
 
-export function getOrCreateEarning(feeReceiptId: string, amount : BigInt, userAddress: Address) : Earning {
+export function getOrCreateEarning(feeReceiptId: string, amount : BigDecimal, userAddress: Address) : Earning {
     let earning = Earning.load(feeReceiptId.concat("-").concat(userAddress.toHexString()));
     if(!earning){
         earning = new Earning(feeReceiptId.concat("-").concat(userAddress.toHexString()));
