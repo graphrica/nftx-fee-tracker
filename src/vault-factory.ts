@@ -70,7 +70,6 @@ export function handleNewVault(event: NewVault): void {
     ticker = result.value;
   }
   getOrCreateVault(event.params.vaultAddress, event.params.vaultId, ticker, event.params.assetAddress);
-  VaultTemplateContract.create(event.params.vaultAddress);
 }
 
 export function handleSetPaused(event: SetPaused): void {}
