@@ -18,6 +18,8 @@ dataSources:
       abis:
         - name: VaultFactory
           file: ./abis/VaultFactory.json
+        - name: VaultTemplate
+          file: ./abis/VaultTemplate.json
       eventHandlers:
         - event: NewVault(indexed uint256,address,address)
           handler: handleNewVault
