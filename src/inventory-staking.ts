@@ -34,8 +34,8 @@ export function handleFeesReceived(event: FeesReceived): void {
               let userShare = BigDecimal.fromString(poolShare.inventoryShare.toString())
               .div(BigDecimal.fromString(vault.inventoryStakedTotal.toString()));
 
-            let earningAmount = userShare.times(BigDecimal.fromString(event.params.amount.toString()))
-              let earning = getOrCreateEarning(
+              let earningAmount = userShare.times(BigDecimal.fromString(event.params.amount.toString()))
+              getOrCreateEarning(
                 feeReceipt.id,
                 earningAmount,
                 Address.fromString(poolShare.user)
@@ -48,8 +48,6 @@ export function handleFeesReceived(event: FeesReceived): void {
   }
 }
 export function handleDeposit(event: Deposit): void {
-  // Increase PoolShare inventory for user for vault
-
   let user = getOrCreateUser(event.params.sender);
 
   let vault = getVaultFromId(event.params.vaultId);
@@ -71,33 +69,6 @@ export function handleDeposit(event: Deposit): void {
     vault.shares = shares;
     vault.save();
   }
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.balanceOf(...)
-  // - contract.childImplementation(...)
-  // - contract.isGuardian(...)
-  // - contract.isPaused(...)
-  // - contract.nftxVaultFactory(...)
-  // - contract.owner(...)
-  // - contract.receiveRewards(...)
-  // - contract.timelockMintFor(...)
-  // - contract.timelockUntil(...)
-  // - contract.vaultXToken(...)
-  // - contract.xTokenAddr(...)
-  // - contract.xTokenShareValue(...)
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -117,5 +88,4 @@ export function handleWithdraw(event: Withdraw): void {
     );
     poolShare.save();
   }
-  // Decrease PoolShare inventory for user for vault
 }
