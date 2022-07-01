@@ -14,9 +14,9 @@ export const calculateEarningAmount = (
   userStake: BigInt,
   feeAmount: BigInt
 ): BigDecimal =>
-  BigDecimal.fromString(userStake.toString())
+  (BigDecimal.fromString(userStake.toString())
     .div(BigDecimal.fromString(totalStake.toString()))
-    .times(BigDecimal.fromString(feeAmount.toString()));
+    ).times(BigDecimal.fromString(feeAmount.toString()));
 
 export function getOrCreateUser(address: Address): User {
   let user = User.load(address.toHexString());
