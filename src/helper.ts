@@ -14,9 +14,9 @@ export const calculateEarningAmount = (
   userStake: BigInt,
   feeAmount: BigInt
 ): BigDecimal =>
-  (BigDecimal.fromString(userStake.toString())
-    .div(BigDecimal.fromString(totalStake.toString()))
-    ).times(BigDecimal.fromString(feeAmount.toString()));
+  (userStake.toBigDecimal()
+    .div(totalStake.toBigDecimal())
+    ).times(feeAmount.toBigDecimal());
 
 export function getOrCreateUser(address: Address): User {
   let user = User.load(address.toHexString());
@@ -150,7 +150,7 @@ export function getOrCreateFeeReceipt(
     );
     feeReceipt.timestamp = timestamp;
     feeReceipt.vault = vaultId.toHexString();
-    feeReceipt.amount = amount;
+    feeReceipt.amount = amount.toBigDecimal();
     feeReceipt.isInventory = isInventory;
     feeReceipt.save();
   }
