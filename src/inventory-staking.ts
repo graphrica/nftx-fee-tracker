@@ -24,8 +24,8 @@ export function handleFeesReceived(event: FeesReceived): void {
     true
   );
 
-  if (vault != null) {
-    if (vault.shares != null) {
+  if (vault) {
+    if (vault.shares) {
       var array: string[] = vault.shares;
       if (array != null) {
         for (let i = 0; i < array.length; i++) {
