@@ -104,7 +104,7 @@ type Earning @entity {
 
 type FeeReceipt @entity {
   id: ID!
-	timestamp: BigInt!
+  timestamp: BigInt!
   isInventory: Boolean!
   vault: Vault!
   amount: BigInt
