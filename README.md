@@ -49,6 +49,8 @@ callHandlers:
           handler: handleDeposit 
         - function: withdraw(uint256,uint256)
           handler: handleWithdraw
+        - function: timelockDepositFor(uint256,address,uint256,uint256)
+          handler: handleTimelockDeposit
       eventHandlers:
         - event: FeesReceived(uint256,uint256)
           handler: handleFeesReceived
