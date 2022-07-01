@@ -139,7 +139,7 @@ export function getOrCreateFeeReceipt(
     txHash
       .toHexString()
       .concat("-")
-      .concat(vaultId.toHexString())
+      .concat(vaultId.toHexString().concat("-").concat(timestamp.toHexString()))
   );
   if (!feeReceipt) {
     feeReceipt = new FeeReceipt(

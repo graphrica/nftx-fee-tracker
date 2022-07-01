@@ -27,32 +27,35 @@ export function handleFeesReceived(event: FeesReceived): void {
   if (vault) {
     if (vault.shares) {
       var array: string[] = vault.shares;
-      if (array != null) {
-        for (let i = 0; i < array.length; i++) {
-          let poolShare = PoolShare.load(array[i]);
-          if (poolShare) {
-            if (poolShare.inventoryShare != BigInt.fromI32(0)) {
-              let earningAmount = calculateEarningAmount(vault.inventoryStakedTotal, poolShare.inventoryShare, event.params.amount);
-             
-              getOrCreateEarning(
-                feeReceipt.id,
-                earningAmount,
-                Address.fromString(poolShare.user)
-              );
+      for (let i = 0; i < array.length; i++) {
+        let poolShare = PoolShare.load(array[i]);
+        if (poolShare) {
+          if (poolShare.inventoryShare != BigInt.fromI32(0)) {
+            let earningAmount = calculateEarningAmount(
+              vault.inventoryStakedTotal,
+              poolShare.inventoryShare,
+              event.params.amount
+            );
 
-              updateOrCreateUserVaultFeeAggregate(
-                vault.id,
-                earningAmount,
-                Address.fromString(poolShare.user),
-                true
-              );
-            }
+            getOrCreateEarning(
+              feeReceipt.id,
+              earningAmount,
+              Address.fromString(poolShare.user)
+            );
+
+            updateOrCreateUserVaultFeeAggregate(
+              vault.id,
+              earningAmount,
+              Address.fromString(poolShare.user),
+              true
+            );
           }
         }
       }
     }
   }
 }
+
 export function handleDeposit(event: Deposit): void {
   getOrCreateUser(event.params.sender);
   let vault = getVaultFromId(event.params.vaultId);
