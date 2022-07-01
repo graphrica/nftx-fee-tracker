@@ -91,7 +91,7 @@ export function handleTimelockDeposit(call: TimelockDepositForCall): void {
     shares.push(poolShare.id);
     vault.shares = shares;
     vault.save();
-    log.info("Timelock Deposit - txHash = {}, amount = {}, user = {}", [call.transaction.hash.toHexString(), call.inputs.amount.toHexString(), call.inputs.account.toHexString()])
+    log.info("Timelock Deposit - txHash = {}, amount = {}, user = {}", [call.transaction.hash.toHexString(), call.inputs.amount.toString(), call.inputs.account.toHexString()])
   }
 }
 
