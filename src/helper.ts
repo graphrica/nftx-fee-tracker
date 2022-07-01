@@ -28,9 +28,6 @@ export function getOrCreateUser(address: Address): User {
 }
 export function getVaultFromId(vaultId: BigInt): Vault | null {
   let vault = Vault.load(vaultId.toHexString());
-  if (!vault) {
-    return null;
-  }
   return vault;
 }
 
