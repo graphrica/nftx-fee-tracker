@@ -66,7 +66,7 @@ type User @entity {
 }
 
 type Vault @entity {
-  id: ID! # Address of Vault
+  id: ID! 
   vaultId: BigInt!
   address: Bytes!
   assetAddress: Bytes!
@@ -90,7 +90,7 @@ type PoolShare @entity {
 }
 
 type UserVaultFeeAggregate @entity {
-  id: ID! # UserID - Vault - Inventory/LP
+  id: ID! 
   isInventory: Boolean!
   user: User!
   vault: Vault!
