@@ -5,7 +5,7 @@ type User @entity {
 }
 
 type Vault @entity {
-  id: ID! # Address of Vault
+  id: ID! # VaultID
   vaultId: BigInt!
   address: Bytes!
   assetAddress: Bytes!
@@ -16,7 +16,7 @@ type Vault @entity {
 }
 
 type VaultAddressLookup @entity {
-  id: ID!
+  id: ID! #Address
   vault: Vault!
 }
 
