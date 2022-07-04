@@ -21,6 +21,7 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.params.vaultId,
     event.params.amount,
     event.block.timestamp,
+    event.logIndex,
     true
   );
 

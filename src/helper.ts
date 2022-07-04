@@ -14,9 +14,10 @@ export const calculateEarningAmount = (
   userStake: BigInt,
   feeAmount: BigInt
 ): BigDecimal =>
-  (BigDecimal.fromString(userStake.toString())
-    .div(BigDecimal.fromString(totalStake.toString()))
-    ).times(BigDecimal.fromString(feeAmount.toString()));
+  userStake
+    .toBigDecimal()
+    .div(totalStake.toBigDecimal())
+    .times(feeAmount.toBigDecimal());
 
 export function getOrCreateUser(address: Address): User {
   let user = User.load(address.toHexString());
@@ -133,24 +134,27 @@ export function getOrCreateFeeReceipt(
   vaultId: BigInt,
   amount: BigInt,
   timestamp: BigInt,
+  logIndex: BigInt,
   isInventory: boolean
 ): FeeReceipt {
-  let feeReceipt = FeeReceipt.load(
-    txHash
-      .toHexString()
-      .concat("-")
-      .concat(vaultId.toHexString().concat("-").concat(timestamp.toHexString()))
-  );
-  if (!feeReceipt) {
-    feeReceipt = new FeeReceipt(
-      txHash
-        .toHexString()
-        .concat("-")
-        .concat(vaultId.toHexString())
+  let feeReceiptId = txHash
+    .toHexString()
+    .concat("-")
+    .concat(vaultId.toHexString())
+    .concat("-")
+    .concat(logIndex.toHexString())
+    .concat("-")
+    .concat(
+      isInventory
+        ? BigInt.fromI32(1).toHexString()
+        : BigInt.fromI32(0).toHexString()
     );
+  let feeReceipt = FeeReceipt.load(feeReceiptId);
+  if (!feeReceipt) {
+    feeReceipt = new FeeReceipt(feeReceiptId);
     feeReceipt.timestamp = timestamp;
     feeReceipt.vault = vaultId.toHexString();
-    feeReceipt.amount = amount;
+    feeReceipt.amount = amount.toBigDecimal();
     feeReceipt.isInventory = isInventory;
     feeReceipt.save();
   }
@@ -162,13 +166,10 @@ export function getOrCreateEarning(
   amount: BigDecimal,
   userAddress: Address
 ): Earning {
-  let earning = Earning.load(
-    feeReceiptId.concat("-").concat(userAddress.toHexString())
-  );
+  let earningId = feeReceiptId.concat("-").concat(userAddress.toHexString());
+  let earning = Earning.load(earningId);
   if (!earning) {
-    earning = new Earning(
-      feeReceiptId.concat("-").concat(userAddress.toHexString())
-    );
+    earning = new Earning(earningId);
     earning.amount = amount;
     earning.feeReceipt = feeReceiptId;
     earning.user = userAddress.toHexString();
@@ -184,19 +185,11 @@ export function updateOrCreateUserVaultFeeAggregate(
   isInventory: boolean
 ): UserVaultFeeAggregate {
   let userVaultFeeAggregate = UserVaultFeeAggregate.load(
-    vaultId
-      .concat("-")
-      .concat(userAddress.toHexString())
-      .concat("-")
-      .concat(isInventory ? "1" : "0")
+    vaultId.concat("-").concat(userAddress.toHexString())
   );
   if (!userVaultFeeAggregate) {
     userVaultFeeAggregate = new UserVaultFeeAggregate(
-      vaultId
-        .concat("-")
-        .concat(userAddress.toHexString())
-        .concat("-")
-        .concat(isInventory ? "1" : "0")
+      vaultId.concat("-").concat(userAddress.toHexString())
     );
     userVaultFeeAggregate.aggregatedVaultFees = amount;
     userVaultFeeAggregate.vault = vaultId;

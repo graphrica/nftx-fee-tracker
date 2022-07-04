@@ -1,6 +1,10 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
+import { BigInt, Address, log } from "@graphprotocol/graph-ts";
 import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
-import { FeesReceived, DepositCall } from "../generated/LPStaking/LPStaking";
+import {
+  FeesReceived,
+  DepositCall,
+  TimelockDepositForCall,
+} from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
 import {
   calculateEarningAmount,
@@ -19,6 +23,7 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.params.vaultId,
     event.params.amount,
     event.block.timestamp,
+    event.logIndex,
     false
   );
 
@@ -71,6 +76,34 @@ export function handleDeposit(call: DepositCall): void {
     shares.push(poolShare.id);
     vault.shares = shares;
     vault.save();
+  }
+}
+
+export function handleTimelockDeposit(call: TimelockDepositForCall): void {
+  getOrCreateUser(call.inputs.account);
+  let vault = getVaultFromId(call.inputs.vaultId);
+  if (vault) {
+    vault.liquidityStakedTotal = vault.liquidityStakedTotal.plus(
+      call.inputs.amount
+    );
+    vault.save();
+    let poolShare = getPoolShare(
+      Address.fromBytes(vault.address),
+      call.inputs.account
+    );
+    poolShare.liquidityShare = poolShare.liquidityShare.plus(
+      call.inputs.amount
+    );
+    poolShare.save();
+    var shares = vault.shares;
+    shares.push(poolShare.id);
+    vault.shares = shares;
+    vault.save();
+    log.info("Timelock Deposit - txHash = {}, amount = {}, user = {}", [
+      call.transaction.hash.toHexString(),
+      call.inputs.amount.toString(),
+      call.inputs.account.toHexString(),
+    ]);
   }
 }
 

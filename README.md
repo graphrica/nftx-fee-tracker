@@ -26,32 +26,34 @@ ___
 [**VaultFactoryUpgradeable**](https://github.com/NFTX-project/nftx-protocol-v2/blob/master/contracts/solidity/NFTXVaultFactoryUpgradeable.sol)
 ```
 eventHandlers:
-        - event: NewVault(indexed uint256,address,address)
-          handler: handleNewVault - // Creates New Vault Entity
+  - event: NewVault(indexed uint256,address,address)
+    handler: handleNewVault - // Creates New Vault Entity
 
 ```
 [**InventoryStaking**](https://github.com/NFTX-project/nftx-protocol-v2/blob/master/contracts/solidity/NFTXInventoryStaking.sol)
 ```
 eventHandlers:
-        - event: FeesReceived(uint256,uint256)
-          handler: handleFeesReceived
-        - event: Deposit(uint256,uint256,uint256,uint256,address)
-          handler: handleDeposit
-        - event: Withdraw(uint256,uint256,uint256,address)
-          handler: handleWithdraw
+  - event: FeesReceived(uint256,uint256)
+    handler: handleFeesReceived
+  - event: Deposit(uint256,uint256,uint256,uint256,address)
+    handler: handleDeposit
+  - event: Withdraw(uint256,uint256,uint256,address)
+    handler: handleWithdraw
 ```
 
 [**LPStaking**](https://github.com/NFTX-project/nftx-protocol-v2/blob/master/contracts/solidity/NFTXLPStaking.sol)
 
 ```
 callHandlers:
-        - function: deposit(uint256,uint256)
-          handler: handleDeposit 
-        - function: withdraw(uint256,uint256)
-          handler: handleWithdraw
-      eventHandlers:
-        - event: FeesReceived(uint256,uint256)
-          handler: handleFeesReceived
+  - function: deposit(uint256,uint256)
+    handler: handleDeposit 
+  - function: withdraw(uint256,uint256)
+    handler: handleWithdraw
+  - function: timelockDepositFor(uint256,address,uint256,uint256)
+    handler: handleTimelockDeposit
+eventHandlers:
+  - event: FeesReceived(uint256,uint256)
+    handler: handleFeesReceived
 ```
 ___
 ## Schema

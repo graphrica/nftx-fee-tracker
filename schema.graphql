@@ -49,6 +49,6 @@ type FeeReceipt @entity {
 	timestamp: BigInt!
   isInventory: Boolean!
   vault: Vault!
-  amount: BigInt
+  amount: BigDecimal!
   feeDistribution: [Earning!] @derivedFrom(field: "feeReceipt")
 }
