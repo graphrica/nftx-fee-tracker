@@ -1,6 +1,10 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
 import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
-import { FeesReceived, DepositCall, TimelockDepositForCall } from "../generated/LPStaking/LPStaking";
+import {
+  FeesReceived,
+  DepositCall,
+  TimelockDepositForCall,
+} from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
 import {
   calculateEarningAmount,
@@ -83,7 +87,10 @@ export function handleTimelockDeposit(call: TimelockDepositForCall): void {
       call.inputs.amount
     );
     vault.save();
-    let poolShare = getPoolShare(Address.fromBytes(vault.address), call.inputs.account);
+    let poolShare = getPoolShare(
+      Address.fromBytes(vault.address),
+      call.inputs.account
+    );
     poolShare.liquidityShare = poolShare.liquidityShare.plus(
       call.inputs.amount
     );
@@ -92,7 +99,11 @@ export function handleTimelockDeposit(call: TimelockDepositForCall): void {
     shares.push(poolShare.id);
     vault.shares = shares;
     vault.save();
-    log.info("Timelock Deposit - txHash = {}, amount = {}, user = {}", [call.transaction.hash.toHexString(), call.inputs.amount.toString(), call.inputs.account.toHexString()])
+    log.info("Timelock Deposit - txHash = {}, amount = {}, user = {}", [
+      call.transaction.hash.toHexString(),
+      call.inputs.amount.toString(),
+      call.inputs.account.toHexString(),
+    ]);
   }
 }
 
