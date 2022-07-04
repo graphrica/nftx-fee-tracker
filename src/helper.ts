@@ -144,8 +144,6 @@ export function getOrCreateFeeReceipt(
     .concat("-")
     .concat(logIndex.toHexString())
     .concat("-")
-    .concat(timestamp.toHexString())
-    .concat("-")
     .concat(
       isInventory
         ? BigInt.fromI32(1).toHexString()
@@ -166,18 +164,9 @@ export function getOrCreateFeeReceipt(
 export function getOrCreateEarning(
   feeReceiptId: string,
   amount: BigDecimal,
-  userAddress: Address,
-  isInventory: boolean
+  userAddress: Address
 ): Earning {
-  let earningId = feeReceiptId
-    .concat("-")
-    .concat(userAddress.toHexString())
-    .concat("-")
-    .concat(
-      isInventory
-        ? BigInt.fromI32(1).toHexString()
-        : BigInt.fromI32(0).toHexString()
-    );
+  let earningId = feeReceiptId.concat("-").concat(userAddress.toHexString());
   let earning = Earning.load(earningId);
   if (!earning) {
     earning = new Earning(earningId);
@@ -196,19 +185,11 @@ export function updateOrCreateUserVaultFeeAggregate(
   isInventory: boolean
 ): UserVaultFeeAggregate {
   let userVaultFeeAggregate = UserVaultFeeAggregate.load(
-    vaultId
-      .concat("-")
-      .concat(userAddress.toHexString())
-      .concat("-")
-      .concat(isInventory ? "1" : "0")
+    vaultId.concat("-").concat(userAddress.toHexString())
   );
   if (!userVaultFeeAggregate) {
     userVaultFeeAggregate = new UserVaultFeeAggregate(
-      vaultId
-        .concat("-")
-        .concat(userAddress.toHexString())
-        .concat("-")
-        .concat(isInventory ? "1" : "0")
+      vaultId.concat("-").concat(userAddress.toHexString())
     );
     userVaultFeeAggregate.aggregatedVaultFees = amount;
     userVaultFeeAggregate.vault = vaultId;

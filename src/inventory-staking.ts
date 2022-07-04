@@ -41,8 +41,7 @@ export function handleFeesReceived(event: FeesReceived): void {
             getOrCreateEarning(
               feeReceipt.id,
               earningAmount,
-              Address.fromString(poolShare.user),
-              true
+              Address.fromString(poolShare.user)
             );
 
             updateOrCreateUserVaultFeeAggregate(
