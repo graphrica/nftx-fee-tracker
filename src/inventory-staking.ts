@@ -21,6 +21,7 @@ export function handleFeesReceived(event: FeesReceived): void {
     event.params.vaultId,
     event.params.amount,
     event.block.timestamp,
+    event.logIndex,
     true
   );
 
@@ -40,7 +41,8 @@ export function handleFeesReceived(event: FeesReceived): void {
             getOrCreateEarning(
               feeReceipt.id,
               earningAmount,
-              Address.fromString(poolShare.user)
+              Address.fromString(poolShare.user),
+              true
             );
 
             updateOrCreateUserVaultFeeAggregate(
