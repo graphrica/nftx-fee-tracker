@@ -164,7 +164,9 @@ export function getOrCreateFeeReceipt(
 export function getOrCreateEarning(
   feeReceiptId: string,
   amount: BigDecimal,
-  userAddress: Address
+  userAddress: Address,
+  vaultId: string,
+  isInventory: boolean
 ): Earning {
   let earningId = feeReceiptId.concat("-").concat(userAddress.toHexString());
   let earning = Earning.load(earningId);
@@ -172,6 +174,8 @@ export function getOrCreateEarning(
     earning = new Earning(earningId);
     earning.amount = amount;
     earning.feeReceipt = feeReceiptId;
+    earning.vault = vaultId;
+    earning.isInventory = isInventory;
     earning.user = userAddress.toHexString();
     earning.save();
   }

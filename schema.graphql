@@ -32,6 +32,8 @@ type PoolShare @entity {
 type Earning @entity {
   id: ID!
   feeReceipt: FeeReceipt!
+  vault: Vault!
+  isInventory: Boolean!
   user: User!
   amount: BigDecimal
 }
