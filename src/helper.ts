@@ -31,8 +31,11 @@ export function getOrCreateUser(address: Address): User {
   }
   return user;
 }
-export function getVaultFromId(vaultId: BigInt): Vault | null {
-  let vault = Vault.load(vaultId.toHexString());
+export function getVaultFromId(vaultId: BigInt): Vault  {
+  var vault = Vault.load(vaultId.toHexString());
+  if(!vault){
+    vault = getOrUpdateVault(ADDRESS_ZERO, vaultId, "", ADDRESS_ZERO);
+  }
   return vault;
 }
 
@@ -48,7 +51,7 @@ export function getVaultFromAddress(address: Address): Vault | null {
   return vault;
 }
 
-export function getOrCreateVault(
+export function getOrUpdateVault(
   address: Address,
   vaultId: BigInt,
   ticker: string,
@@ -77,6 +80,11 @@ export function getOrCreateVault(
     let vaultAddressLookup = new VaultAddressLookup(address.toHexString());
     vaultAddressLookup.vault = vault.id;
     vaultAddressLookup.save();
+  }
+  else{
+    vault.address = address;
+    vault.ticker = ticker;
+    vault.assetAddress = assetAddress;
   }
   return vault;
 }

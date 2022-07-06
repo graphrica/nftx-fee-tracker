@@ -7,8 +7,8 @@ type User @entity {
 type Vault @entity {
   id: ID! # VaultID
   vaultId: BigInt!
-  address: Bytes!
-  assetAddress: Bytes!
+  address: Bytes
+  assetAddress: Bytes
   xTokenAddress: Bytes!
   xTokenWethAddress: Bytes!
   inventoryStakedTotal: BigInt!

@@ -1,6 +1,6 @@
 import { NewVault } from "../generated/VaultFactory/VaultFactory";
 import { VaultTemplate } from "../generated/VaultFactory/VaultTemplate";
-import { getOrCreateVault } from "./helper";
+import { getOrUpdateVault } from "./helper";
 
 export function handleNewVault(event: NewVault): void {
   //Create new vault
@@ -10,7 +10,7 @@ export function handleNewVault(event: NewVault): void {
   if (!result.reverted) {
     ticker = result.value;
   }
-  getOrCreateVault(
+  getOrUpdateVault(
     event.params.vaultAddress,
     event.params.vaultId,
     ticker,
