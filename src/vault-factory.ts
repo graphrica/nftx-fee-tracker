@@ -1,5 +1,5 @@
 import { NewVault } from "../generated/VaultFactory/VaultFactory";
-import { VaultTemplate } from "../generated/VaultTemplate/VaultTemplate";
+import { VaultTemplate } from "../generated/VaultFactory/VaultTemplate";
 import { getOrCreateVault } from "./helper";
 
 export function handleNewVault(event: NewVault): void {

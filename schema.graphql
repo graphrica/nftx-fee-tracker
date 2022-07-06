@@ -25,8 +25,8 @@ type PoolShare @entity {
   id: ID!
   vault: Vault!
   user: User!
-  inventoryShare: BigInt!
-  liquidityShare: BigInt!
+  inventoryShare: BigDecimal!
+  liquidityShare: BigDecimal!
 }
 
 type Earning @entity {
@@ -53,4 +53,10 @@ type FeeReceipt @entity {
   vault: Vault!
   amount: BigDecimal!
   feeDistribution: [Earning!] @derivedFrom(field: "feeReceipt")
+}
+
+type Token @entity {
+  id: ID!
+  vault: Vault!
+  isInventory: Boolean!
 }

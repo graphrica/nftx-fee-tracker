@@ -7,15 +7,19 @@ import {
   Earning,
   VaultAddressLookup,
   UserVaultFeeAggregate,
+  Token
 } from "../generated/schema";
+
+export const ADDRESS_ZERO = Address.fromString("0x0000000000000000000000000000000000000000");
+export const LP_STAKING = Address.fromString("0x688c3E4658B5367da06fd629E41879beaB538E37");
+export const INVENTORY_STAKING = Address.fromString("0x3E135c3E981fAe3383A5aE0d323860a34CfAB893");
 
 export const calculateEarningAmount = (
   totalStake: BigInt,
-  userStake: BigInt,
+  userStake: BigDecimal,
   feeAmount: BigInt
 ): BigDecimal =>
   userStake
-    .toBigDecimal()
     .div(totalStake.toBigDecimal())
     .times(feeAmount.toBigDecimal());
 
@@ -118,12 +122,12 @@ export function createOrUpdatePoolShare(
     );
     poolShare.vault = vaultAddress.toHexString();
     poolShare.user = userAddress.toHexString();
-    poolShare.inventoryShare = inventoryShare;
-    poolShare.liquidityShare = liquidityShare;
+    poolShare.inventoryShare = inventoryShare.toBigDecimal();
+    poolShare.liquidityShare = liquidityShare.toBigDecimal();
     poolShare.save();
   } else {
-    poolShare.inventoryShare = inventoryShare;
-    poolShare.liquidityShare = liquidityShare;
+    poolShare.inventoryShare = inventoryShare.toBigDecimal();
+    poolShare.liquidityShare = liquidityShare.toBigDecimal();
     poolShare.save();
   }
   return poolShare;
@@ -180,6 +184,22 @@ export function getOrCreateEarning(
     earning.save();
   }
   return earning;
+}
+
+export function getOrCreateToken(
+  tokenAddress: Address,
+  vaultId: string,
+  isInventory: boolean
+): Token {
+  let tokenId = tokenAddress.toHexString();
+  let token = Token.load(tokenId);
+  if (!token) {
+    token = new Token(tokenId);
+    token.vault = vaultId;
+    token.isInventory = isInventory;
+    token.save();
+  }
+  return token;
 }
 
 export function updateOrCreateUserVaultFeeAggregate(

@@ -1,4 +1,4 @@
-specVersion: 0.0.4
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
@@ -11,7 +11,7 @@ dataSources:
       abi: VaultFactory
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - User
@@ -33,23 +33,25 @@ dataSources:
       abi: LPStaking
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - User
       abis:
         - name: LPStaking
           file: ./abis/LPStaking.json
-      callHandlers:
-        - function: deposit(uint256,uint256)
-          handler: handleDeposit
-        - function: withdraw(uint256,uint256)
-          handler: handleWithdraw
-        - function: timelockDepositFor(uint256,address,uint256,uint256)
-          handler: handleTimelockDeposit
+      # callHandlers:
+      #   - function: deposit(uint256,uint256)
+      #     handler: handleDeposit
+      #   - function: withdraw(uint256,uint256)
+      #     handler: handleWithdraw
+      #   - function: timelockDepositFor(uint256,address,uint256,uint256)
+      #     handler: handleTimelockDeposit
       eventHandlers:
         - event: FeesReceived(uint256,uint256)
           handler: handleFeesReceived
+        - event: PoolCreated(uint256,address)
+          handler: handlePoolCreated
       file: ./src/lp-staking.ts
   - kind: ethereum
     name: InventoryStaking
@@ -60,7 +62,7 @@ dataSources:
       abi: InventoryStaking
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - User
@@ -74,4 +76,45 @@ dataSources:
           handler: handleDeposit
         - event: Withdraw(uint256,uint256,uint256,address)
           handler: handleWithdraw
+        - event: XTokenCreated(uint256,address,address)
+          handler: handleXTokenCreated
       file: ./src/inventory-staking.ts   
+templates:
+    - kind: ethereum
+      name: TokenX
+      network: mainnet
+      source:
+        abi: ERC20
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.7
+        language: wasm/assemblyscript
+        entities:
+          - User
+        abis:
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: Transfer(indexed address,indexed address,uint256)
+            handler: handleTransfer
+            receipt: true
+        file: ./src/tokenx-template.ts
+    - kind: ethereum
+      name: TokenXWeth
+      network: mainnet
+      source:
+        abi: ERC20
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.7
+        language: wasm/assemblyscript
+        entities:
+          - User
+        abis:
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: Transfer(indexed address,indexed address,uint256)
+            handler: handleTransfer
+            receipt: true
+        file: ./src/tokenxweth-template.ts

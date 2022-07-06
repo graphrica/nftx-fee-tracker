@@ -1,20 +1,25 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { WithdrawCall } from "../generated/InventoryStaking/InventoryStaking";
 import {
   FeesReceived,
   DepositCall,
   TimelockDepositForCall,
+  PoolCreated,
+  WithdrawCall,
 } from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
 import {
   calculateEarningAmount,
   getOrCreateEarning,
   getOrCreateFeeReceipt,
+  getOrCreateToken,
   getOrCreateUser,
+  getOrCreateVault,
   getPoolShare,
   getVaultFromId,
   updateOrCreateUserVaultFeeAggregate,
 } from "./helper";
+
+import { TokenXWeth} from "../generated/templates"
 
 export function handleFeesReceived(event: FeesReceived): void {
   let vault = getVaultFromId(event.params.vaultId);
@@ -33,7 +38,7 @@ export function handleFeesReceived(event: FeesReceived): void {
       for (let i = 0; i < array.length; i++) {
         let poolShare = PoolShare.load(array[i]);
         if (poolShare) {
-          if (poolShare.liquidityShare != BigInt.fromI32(0)) {
+          if (poolShare.liquidityShare != BigInt.fromI32(0).toBigDecimal()) {
             let earningAmount = calculateEarningAmount(
               vault.liquidityStakedTotal,
               poolShare.liquidityShare,
@@ -61,66 +66,10 @@ export function handleFeesReceived(event: FeesReceived): void {
   }
 }
 
-export function handleDeposit(call: DepositCall): void {
-  getOrCreateUser(call.from);
-  let vault = getVaultFromId(call.inputs.vaultId);
-  if (vault) {
-    vault.liquidityStakedTotal = vault.liquidityStakedTotal.plus(
-      call.inputs.amount
-    );
-    vault.save();
-    let poolShare = getPoolShare(Address.fromBytes(vault.address), call.from);
-    poolShare.liquidityShare = poolShare.liquidityShare.plus(
-      call.inputs.amount
-    );
-    poolShare.save();
-    var shares = vault.shares;
-    shares.push(poolShare.id);
-    vault.shares = shares;
-    vault.save();
-  }
-}
-
-export function handleTimelockDeposit(call: TimelockDepositForCall): void {
-  getOrCreateUser(call.inputs.account);
-  let vault = getVaultFromId(call.inputs.vaultId);
-  if (vault) {
-    vault.liquidityStakedTotal = vault.liquidityStakedTotal.plus(
-      call.inputs.amount
-    );
-    vault.save();
-    let poolShare = getPoolShare(
-      Address.fromBytes(vault.address),
-      call.inputs.account
-    );
-    poolShare.liquidityShare = poolShare.liquidityShare.plus(
-      call.inputs.amount
-    );
-    poolShare.save();
-    var shares = vault.shares;
-    shares.push(poolShare.id);
-    vault.shares = shares;
-    vault.save();
-    log.info("Timelock Deposit - txHash = {}, amount = {}, user = {}", [
-      call.transaction.hash.toHexString(),
-      call.inputs.amount.toString(),
-      call.inputs.account.toHexString(),
-    ]);
-  }
-}
-
-export function handleWithdraw(call: WithdrawCall): void {
-  getOrCreateUser(call.from);
-  let vault = getVaultFromId(call.inputs.vaultId);
-  if (vault) {
-    vault.liquidityStakedTotal = vault.liquidityStakedTotal.minus(
-      call.inputs._share
-    );
-    vault.save();
-    let poolShare = getPoolShare(Address.fromBytes(vault.address), call.from);
-    poolShare.liquidityShare = poolShare.liquidityShare.minus(
-      call.inputs._share
-    );
-    poolShare.save();
-  }
+export function handlePoolCreated(event : PoolCreated) : void {
+    let vault = getVaultFromId(event.params.vaultId);
+    if(vault){
+      let token = getOrCreateToken(event.params.pool, vault.id, false);
+      TokenXWeth.create(event.params.pool);
+    }
 }

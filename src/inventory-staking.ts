@@ -3,8 +3,10 @@ import {
   Deposit,
   Withdraw,
   FeesReceived,
+  XTokenCreated,
 } from "../generated/InventoryStaking/InventoryStaking";
 import { PoolShare } from "../generated/schema";
+import { TokenX } from "../generated/templates";
 import {
   getPoolShare,
   getOrCreateUser,
@@ -13,6 +15,7 @@ import {
   getOrCreateFeeReceipt,
   updateOrCreateUserVaultFeeAggregate,
   calculateEarningAmount,
+  getOrCreateToken,
 } from "./helper";
 export function handleFeesReceived(event: FeesReceived): void {
   let vault = getVaultFromId(event.params.vaultId);
@@ -31,7 +34,7 @@ export function handleFeesReceived(event: FeesReceived): void {
       for (let i = 0; i < array.length; i++) {
         let poolShare = PoolShare.load(array[i]);
         if (poolShare) {
-          if (poolShare.inventoryShare != BigInt.fromI32(0)) {
+          if (poolShare.inventoryShare != BigInt.fromI32(0).toBigDecimal()) {
             let earningAmount = calculateEarningAmount(
               vault.inventoryStakedTotal,
               poolShare.inventoryShare,
@@ -72,7 +75,7 @@ export function handleDeposit(event: Deposit): void {
       event.params.sender
     );
     poolShare.inventoryShare = poolShare.inventoryShare.plus(
-      event.params.xTokenAmount
+      event.params.xTokenAmount.toBigDecimal()
     );
     poolShare.save();
     var shares = vault.shares;
@@ -95,8 +98,16 @@ export function handleWithdraw(event: Withdraw): void {
       event.params.sender
     );
     poolShare.inventoryShare = poolShare.inventoryShare.minus(
-      event.params.xTokenAmount
+      event.params.xTokenAmount.toBigDecimal()
     );
     poolShare.save();
+  }
+}
+
+export function handleXTokenCreated(event : XTokenCreated) : void {
+  let vault = getVaultFromId(event.params.vaultId);
+  if(vault){
+    getOrCreateToken(event.params.xToken, vault.id, true);
+    TokenX.create(event.params.xToken);
   }
 }
