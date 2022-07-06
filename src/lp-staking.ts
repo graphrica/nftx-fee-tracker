@@ -68,12 +68,14 @@ export function handlePoolUpdated(event : PoolUpdated) : void {
       let vaultTokenXWethAddress = vault.xTokenWethAddress;
       if(vaultTokenXWethAddress == ADDRESS_ZERO){
         vault.xTokenWethAddress = event.params.pool;
+        vault.save();
         token.vault = vault.id;
         token.save();
         log.info("New Pool Created", []);
       }
       else {
         vault.xTokenWethAddress = event.params.pool;
+        vault.save();
         token.vault = vault.id;
         token.save();
 
