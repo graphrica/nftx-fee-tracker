@@ -1,20 +1,15 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
 import {
   FeesReceived,
-  DepositCall,
-  TimelockDepositForCall,
-  PoolCreated,
-  WithdrawCall,
+  PoolUpdated,
 } from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
 import {
+  ADDRESS_ZERO,
   calculateEarningAmount,
   getOrCreateEarning,
   getOrCreateFeeReceipt,
   getOrCreateToken,
-  getOrCreateUser,
-  getOrCreateVault,
-  getPoolShare,
   getVaultFromId,
   updateOrCreateUserVaultFeeAggregate,
 } from "./helper";
@@ -66,10 +61,27 @@ export function handleFeesReceived(event: FeesReceived): void {
   }
 }
 
-export function handlePoolCreated(event : PoolCreated) : void {
+export function handlePoolUpdated(event : PoolUpdated) : void {
     let vault = getVaultFromId(event.params.vaultId);
     if(vault){
       let token = getOrCreateToken(event.params.pool, vault.id, false);
+      let vaultTokenXWethAddress = vault.xTokenWethAddress;
+      if(vaultTokenXWethAddress == ADDRESS_ZERO){
+        vault.xTokenWethAddress = event.params.pool;
+        token.vault = vault.id;
+        token.save();
+       
+      }
+      else {
+        vault.xTokenWethAddress = event.params.pool;
+        token.vault = vault.id;
+        token.save();
+
+        var oldToken = getOrCreateToken(Address.fromBytes(vaultTokenXWethAddress), vault.id, false);
+        oldToken.isUsed = false;
+        oldToken.save();
+        /// I wish for TokenXWeth.remove(vaultTokenXWethAddress);
+      }
       TokenXWeth.create(event.params.pool);
     }
 }

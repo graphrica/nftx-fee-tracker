@@ -59,6 +59,8 @@ export function getOrCreateVault(
     vault = new Vault(vaultId.toHexString());
     vault.vaultId = vaultId;
     vault.address = address;
+    vault.xTokenAddress = ADDRESS_ZERO;
+    vault.xTokenWethAddress = ADDRESS_ZERO;
     vault.ticker = ticker;
     vault.assetAddress = assetAddress;
     vault.inventoryStakedTotal = BigInt.fromI32(0);
@@ -197,6 +199,7 @@ export function getOrCreateToken(
     token = new Token(tokenId);
     token.vault = vaultId;
     token.isInventory = isInventory;
+    token.isUsed = true;
     token.save();
   }
   return token;

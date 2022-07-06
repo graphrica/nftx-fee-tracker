@@ -9,6 +9,8 @@ type Vault @entity {
   vaultId: BigInt!
   address: Bytes!
   assetAddress: Bytes!
+  xTokenAddress: Bytes!
+  xTokenWethAddress: Bytes!
   inventoryStakedTotal: BigInt!
   liquidityStakedTotal: BigInt!
   shares: [String!]! ##PoolShareID
@@ -58,5 +60,6 @@ type FeeReceipt @entity {
 type Token @entity {
   id: ID!
   vault: Vault!
+  isUsed: Boolean!
   isInventory: Boolean!
 }
