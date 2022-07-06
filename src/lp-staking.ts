@@ -1,6 +1,7 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
 import {
   FeesReceived,
+  PoolCreated,
   PoolUpdated,
 } from "../generated/LPStaking/LPStaking";
 import { PoolShare } from "../generated/schema";
@@ -88,4 +89,14 @@ export function handlePoolUpdated(event : PoolUpdated) : void {
       TokenXWeth.create(event.params.pool);
       
     }
+}
+
+export function handlePoolCreated(event : PoolCreated) : void {
+  let vault = getVaultFromId(event.params.vaultId);
+  if(vault){
+    let token = getOrCreateToken(event.params.pool, vault.id, false);
+    vault.xTokenWethAddress = event.params.pool;
+    vault.save();
+  }
+  TokenXWeth.create(event.params.pool);
 }

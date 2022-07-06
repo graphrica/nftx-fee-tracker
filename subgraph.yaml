@@ -45,6 +45,8 @@ dataSources:
           handler: handleFeesReceived
         - event: PoolUpdated(uint256,address)
           handler: handlePoolUpdated
+        - event: PoolCreated(uint256,address)
+          handler: handlePoolCreated
       file: ./src/lp-staking.ts
   - kind: ethereum
     name: InventoryStaking
