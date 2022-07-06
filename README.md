@@ -39,21 +39,26 @@ eventHandlers:
     handler: handleDeposit
   - event: Withdraw(uint256,uint256,uint256,address)
     handler: handleWithdraw
+  - event: XTokenCreated(uint256,address,address)
+    handler: handleXTokenCreated
 ```
 
 [**LPStaking**](https://github.com/NFTX-project/nftx-protocol-v2/blob/master/contracts/solidity/NFTXLPStaking.sol)
 
 ```
-callHandlers:
-  - function: deposit(uint256,uint256)
-    handler: handleDeposit 
-  - function: withdraw(uint256,uint256)
-    handler: handleWithdraw
-  - function: timelockDepositFor(uint256,address,uint256,uint256)
-    handler: handleTimelockDeposit
 eventHandlers:
   - event: FeesReceived(uint256,uint256)
     handler: handleFeesReceived
+  - event: PoolUpdated(uint256,address)
+    handler: handlePoolUpdated
+```
+
+**TokenX & TokenXWeth**
+
+```
+eventHandlers:
+  - event: Transfer(address,address,uint256)
+    handler: handleTransfer
 ```
 ___
 ## Schema
@@ -66,10 +71,12 @@ type User @entity {
 }
 
 type Vault @entity {
-  id: ID! 
+  id: ID! # VaultID
   vaultId: BigInt!
   address: Bytes!
   assetAddress: Bytes!
+  xTokenAddress: Bytes!
+  xTokenWethAddress: Bytes!
   inventoryStakedTotal: BigInt!
   liquidityStakedTotal: BigInt!
   shares: [String!]! ##PoolShareID
@@ -77,40 +84,50 @@ type Vault @entity {
 }
 
 type VaultAddressLookup @entity {
-  id: ID!
+  id: ID! #Address
   vault: Vault!
 }
+
 
 type PoolShare @entity {
   id: ID!
   vault: Vault!
   user: User!
-  inventoryShare: BigInt!
-  liquidityShare: BigInt!
+  inventoryShare: BigDecimal!
+  liquidityShare: BigDecimal!
+}
+
+type Earning @entity {
+  id: ID!
+  feeReceipt: FeeReceipt!
+  vault: Vault!
+  isInventory: Boolean!
+  user: User!
+  amount: BigDecimal
 }
 
 type UserVaultFeeAggregate @entity {
-  id: ID! 
+  id: ID! # UserID - Vault - Inventory/LP
   isInventory: Boolean!
   user: User!
   vault: Vault!
   aggregatedVaultFees: BigDecimal!
 }
 
-type Earning @entity {
-  id: ID!
-  feeReceipt: FeeReceipt!
-  user: User!
-  amount: BigDecimal
-}
-
 type FeeReceipt @entity {
   id: ID!
-  timestamp: BigInt!
+	timestamp: BigInt!
   isInventory: Boolean!
   vault: Vault!
-  amount: BigInt
+  amount: BigDecimal!
   feeDistribution: [Earning!] @derivedFrom(field: "feeReceipt")
+}
+
+type Token @entity {
+  id: ID!
+  vault: Vault!
+  isUsed: Boolean!
+  isInventory: Boolean!
 }
 ```
 ___

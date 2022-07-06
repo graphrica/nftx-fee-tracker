@@ -40,13 +40,6 @@ dataSources:
       abis:
         - name: LPStaking
           file: ./abis/LPStaking.json
-      # callHandlers:
-      #   - function: deposit(uint256,uint256)
-      #     handler: handleDeposit
-      #   - function: withdraw(uint256,uint256)
-      #     handler: handleWithdraw
-      #   - function: timelockDepositFor(uint256,address,uint256,uint256)
-      #     handler: handleTimelockDeposit
       eventHandlers:
         - event: FeesReceived(uint256,uint256)
           handler: handleFeesReceived
