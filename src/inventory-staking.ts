@@ -108,6 +108,8 @@ export function handleXTokenCreated(event : XTokenCreated) : void {
   let vault = getVaultFromId(event.params.vaultId);
   if(vault){
     getOrCreateToken(event.params.xToken, vault.id, true);
+    vault.xTokenAddress = event.params.xToken;
+    vault.save();
     TokenX.create(event.params.xToken);
   }
 }

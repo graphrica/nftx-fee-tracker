@@ -6,7 +6,6 @@ import {
   ADDRESS_ZERO,
   getOrCreateUser,
   getPoolShare,
-  getVaultFromId,
 } from "./helper";
 
 export function handleTransfer(event: Transfer): void {
