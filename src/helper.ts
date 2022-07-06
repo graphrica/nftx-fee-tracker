@@ -85,6 +85,7 @@ export function getOrUpdateVault(
     vault.address = address;
     vault.ticker = ticker;
     vault.assetAddress = assetAddress;
+    vault.save()
   }
   return vault;
 }
