@@ -9,11 +9,6 @@ The basic calculation for fees earned is `poolShare * allocPoint * fee` where `p
 
 The Inventory and Liquidity receivers can be set in the subgraph’s config. However it would be desirable to find a way to future proof against future receivers being added.
 
-**Requirements**
-
-- For each fee transfer, calculate the share of the fee earned by each staked user.
-- If broader granularity required (one hour, one day etc) then ensuring the total aggregated fee earned for a user takes into account their change `poolShare` for that time period.
-
 **Summary**
 
 Index the exact amount of fee received for every staked individual when a fee receipt is created via mint/redeem/swap.
