@@ -1,6 +1,6 @@
 import { Address, BigDecimal, log } from "@graphprotocol/graph-ts";
 import { BigInt } from "@graphprotocol/graph-ts";
-import { Token } from "../generated/schema";
+import { Token, Vault } from "../generated/schema";
 import { Transfer } from "../generated/templates/TokenXWeth/ERC20";
 import {
   ADDRESS_ZERO,
@@ -12,7 +12,7 @@ import {
 export function handleTransfer(event: Transfer): void {
   let token = Token.load(event.address.toHexString());
   if (token) {
-      let vault = getVaultFromId(BigInt.fromString(token.vault));
+      let vault = Vault.load(token.vault);
       if (vault) {
         if (event.params.from == ADDRESS_ZERO && token.isUsed) {
           getOrCreateUser(event.params.to);

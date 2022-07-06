@@ -70,7 +70,7 @@ export function handlePoolUpdated(event : PoolUpdated) : void {
         vault.xTokenWethAddress = event.params.pool;
         token.vault = vault.id;
         token.save();
-       
+        log.info("New Pool Created", []);
       }
       else {
         vault.xTokenWethAddress = event.params.pool;
@@ -80,8 +80,10 @@ export function handlePoolUpdated(event : PoolUpdated) : void {
         var oldToken = getOrCreateToken(Address.fromBytes(vaultTokenXWethAddress), vault.id, false);
         oldToken.isUsed = false;
         oldToken.save();
+        log.info("Pool Updated", []);
         /// I wish for TokenXWeth.remove(vaultTokenXWethAddress);
       }
       TokenXWeth.create(event.params.pool);
+      
     }
 }
