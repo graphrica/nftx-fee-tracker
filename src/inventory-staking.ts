@@ -72,6 +72,7 @@ export function handleDeposit(event: Deposit): void {
     vault.save();
     let poolShare = getPoolShare(
       Address.fromBytes(vault.address),
+      vault.id,
       event.params.sender
     );
     poolShare.inventoryShare = poolShare.inventoryShare.plus(
@@ -95,6 +96,7 @@ export function handleWithdraw(event: Withdraw): void {
     vault.save();
     let poolShare = getPoolShare(
       Address.fromBytes(vault.address),
+      vault.id,
       event.params.sender
     );
     poolShare.inventoryShare = poolShare.inventoryShare.minus(

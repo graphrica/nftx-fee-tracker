@@ -71,6 +71,7 @@ export function getOrUpdateVault(
     vault.shares = [
       createOrUpdatePoolShare(
         address,
+        vaultId.toHexString(),
         address,
         BigInt.fromI32(0),
         BigInt.fromI32(0)
@@ -92,6 +93,7 @@ export function getOrUpdateVault(
 
 export function getPoolShare(
   vaultAddress: Address,
+  vaultId: string,
   userAddress: Address
 ): PoolShare {
   let poolShare = PoolShare.load(
@@ -103,6 +105,7 @@ export function getPoolShare(
   if (!poolShare) {
     poolShare = createOrUpdatePoolShare(
       vaultAddress,
+      vaultId,
       userAddress,
       BigInt.fromI32(0),
       BigInt.fromI32(0)
@@ -114,6 +117,7 @@ export function getPoolShare(
 
 export function createOrUpdatePoolShare(
   vaultAddress: Address,
+  vaultId: string,
   userAddress: Address,
   inventoryShare: BigInt,
   liquidityShare: BigInt
@@ -131,7 +135,7 @@ export function createOrUpdatePoolShare(
         .concat("-")
         .concat(userAddress.toHexString())
     );
-    poolShare.vault = vaultAddress.toHexString();
+    poolShare.vault = vaultId;
     poolShare.user = userAddress.toHexString();
     poolShare.inventoryShare = inventoryShare.toBigDecimal();
     poolShare.liquidityShare = liquidityShare.toBigDecimal();

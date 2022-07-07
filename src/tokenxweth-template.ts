@@ -1,5 +1,4 @@
 import { Address, BigDecimal, log } from "@graphprotocol/graph-ts";
-import { BigInt } from "@graphprotocol/graph-ts";
 import { Token, Vault } from "../generated/schema";
 import { Transfer } from "../generated/templates/TokenXWeth/ERC20";
 import {
@@ -21,6 +20,7 @@ export function handleTransfer(event: Transfer): void {
           vault.save();
           let poolShare = getPoolShare(
             Address.fromBytes(vault.address),
+            vault.id,
             event.params.to
           );
           poolShare.liquidityShare = poolShare.liquidityShare.plus(
@@ -42,6 +42,7 @@ export function handleTransfer(event: Transfer): void {
           vault.save();
           let poolShare = getPoolShare(
             Address.fromBytes(vault.address),
+            vault.id,
             event.params.from
           );
           poolShare.liquidityShare = poolShare.liquidityShare.minus(
@@ -55,28 +56,29 @@ export function handleTransfer(event: Transfer): void {
         } else {
           let userSenderPoolShare = getPoolShare(
             Address.fromBytes(vault.address),
+            vault.id,
             event.params.from
           );
-
+          let transferAmount = event.params.value.toBigDecimal();
           if (
             userSenderPoolShare.liquidityShare != BigDecimal.fromString("0")
-          ) {
-            let transferAmount = event.params.value.toBigDecimal();
+          ) { 
             userSenderPoolShare.liquidityShare = userSenderPoolShare.liquidityShare.minus(
               transferAmount
             );
             userSenderPoolShare.save();
-
+          }
             getOrCreateUser(event.params.to);
             let userReceiverPoolShare = getPoolShare(
               Address.fromBytes(vault.address),
+              vault.id,
               event.params.to
             );
             userReceiverPoolShare.liquidityShare = userReceiverPoolShare.liquidityShare.plus(
               transferAmount
             );
             userReceiverPoolShare.save();
-          }
+         
         }
     }
   }

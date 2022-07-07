@@ -52,27 +52,28 @@ export function handleTransfer(event: Transfer): void {
       } else {
         let userSenderPoolShare = getPoolShare(
           Address.fromBytes(vault.address),
+          vault.id,
           event.params.from
         );
-
+        let transferAmount = event.params.value.toBigDecimal()
         if (userSenderPoolShare.inventoryShare != BigDecimal.fromString("0")) {
  
-          let transferAmount = event.params.value.toBigDecimal()
           userSenderPoolShare.inventoryShare = userSenderPoolShare.inventoryShare.minus(
             transferAmount
           );
           userSenderPoolShare.save();
-
+          }
           getOrCreateUser(event.params.to);
           let userReceiverPoolShare = getPoolShare(
             Address.fromBytes(vault.address),
+            vault.id,
             event.params.to
           );
           userReceiverPoolShare.inventoryShare = userReceiverPoolShare.inventoryShare.plus(
             transferAmount
           );
           userReceiverPoolShare.save();
-        }
+        
       }
     }
   }
