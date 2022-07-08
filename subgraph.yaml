@@ -90,7 +90,7 @@ templates:
           - name: ERC20
             file: ./abis/ERC20.json
         eventHandlers:
-          - event: Transfer(address,address,uint256)
+          - event: Transfer(indexed address,indexed address,uint256)
             topic0: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
             handler: handleTransfer
         file: ./src/tokenx-template.ts
@@ -109,7 +109,7 @@ templates:
           - name: ERC20
             file: ./abis/ERC20.json
         eventHandlers:
-          - event: Transfer(address,address,uint256)
+          - event: Transfer(indexed address,indexed address,uint256)
             topic0: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
             handler: handleTransfer
         file: ./src/tokenxweth-template.ts
