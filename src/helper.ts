@@ -23,6 +23,7 @@ export const calculateEarningAmount = (
     .div(totalStake.toBigDecimal())
     .times(feeAmount.toBigDecimal());
 
+
 export function getOrCreateUser(address: Address): User {
   let user = User.load(address.toHexString());
   if (!user) {
@@ -213,13 +214,15 @@ export function updateOrCreateUserVaultFeeAggregate(
   userAddress: Address,
   isInventory: boolean
 ): UserVaultFeeAggregate {
-  let userVaultFeeAggregate = UserVaultFeeAggregate.load(
-    vaultId.concat("-").concat(userAddress.toHexString())
+  let id = vaultId.concat("-").concat(userAddress.toHexString()).concat("-")
+  .concat(
+    isInventory
+      ? BigInt.fromI32(1).toHexString()
+      : BigInt.fromI32(0).toHexString()
   );
+  let userVaultFeeAggregate = UserVaultFeeAggregate.load(id);
   if (!userVaultFeeAggregate) {
-    userVaultFeeAggregate = new UserVaultFeeAggregate(
-      vaultId.concat("-").concat(userAddress.toHexString())
-    );
+    userVaultFeeAggregate = new UserVaultFeeAggregate(id);
     userVaultFeeAggregate.aggregatedVaultFees = amount;
     userVaultFeeAggregate.vault = vaultId;
     userVaultFeeAggregate.isInventory = isInventory;

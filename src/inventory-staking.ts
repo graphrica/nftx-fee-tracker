@@ -1,4 +1,4 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
+import { BigInt, Address, log, store } from "@graphprotocol/graph-ts";
 import {
   Deposit,
   Withdraw,
@@ -32,6 +32,10 @@ export function handleFeesReceived(event: FeesReceived): void {
   if (vault) {
     if (vault.shares) {
       var array: string[] = vault.shares;
+      var newArray: string[] = [];
+      log.info("Inventory Fee Distributing to {} potential shareholders", [
+        array.length.toString(),
+      ]);
       for (let i = 0; i < array.length; i++) {
         let poolShare = PoolShare.load(array[i]);
         if (poolShare) {
@@ -56,9 +60,18 @@ export function handleFeesReceived(event: FeesReceived): void {
               Address.fromString(poolShare.user),
               true
             );
+            newArray.push(poolShare.id);
+          } else {
+            if (poolShare.liquidityShare != BigInt.fromI32(0).toBigDecimal()) {
+              newArray.push(poolShare.id);
+            } else {
+              store.remove("PoolShare", poolShare.id);
+            }
           }
         }
       }
+      vault.shares = newArray;
+      vault.save();
     }
   }
 }
@@ -75,13 +88,12 @@ export function handleDeposit(event: Deposit): void {
       Address.fromBytes(vault.address),
       event.params.sender
     );
-    if(poolShare){
+    if (poolShare) {
       poolShare.inventoryShare = poolShare.inventoryShare.plus(
         event.params.xTokenAmount.toBigDecimal()
       );
       poolShare.save();
-    }
-    else {
+    } else {
       poolShare = createOrUpdatePoolShare(
         Address.fromBytes(vault.address),
         vault.id,
@@ -109,19 +121,18 @@ export function handleWithdraw(event: Withdraw): void {
       Address.fromBytes(vault.address),
       event.params.sender
     );
-    if(poolShare){
+    if (poolShare) {
       poolShare.inventoryShare = poolShare.inventoryShare.minus(
         event.params.xTokenAmount.toBigDecimal()
       );
       poolShare.save();
     }
-
   }
 }
 
-export function handleXTokenCreated(event : XTokenCreated) : void {
+export function handleXTokenCreated(event: XTokenCreated): void {
   let vault = getVaultFromId(event.params.vaultId);
-  if(vault){
+  if (vault) {
     getOrCreateToken(event.params.xToken, vault.id, true);
     vault.xTokenAddress = event.params.xToken;
     vault.save();

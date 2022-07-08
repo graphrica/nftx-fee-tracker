@@ -1,4 +1,4 @@
-import { BigInt, Address, log } from "@graphprotocol/graph-ts";
+import { BigInt, Address, log, store } from "@graphprotocol/graph-ts";
 import {
   FeesReceived,
   PoolCreated,
@@ -31,6 +31,10 @@ export function handleFeesReceived(event: FeesReceived): void {
   if (vault) {
     if (vault.shares) {
       var array: string[] = vault.shares;
+      var newArray: string[] = [];
+      log.info("LP Fee Distributing to {} potential shareholders", [
+        array.length.toString(),
+      ]);
       for (let i = 0; i < array.length; i++) {
         let poolShare = PoolShare.load(array[i]);
         if (poolShare) {
@@ -55,9 +59,18 @@ export function handleFeesReceived(event: FeesReceived): void {
               Address.fromString(poolShare.user),
               false
             );
+            newArray.push(poolShare.id);
+          } else {
+            if (poolShare.inventoryShare != BigInt.fromI32(0).toBigDecimal()) {
+              newArray.push(poolShare.id);
+            } else {
+              store.remove("PoolShare", poolShare.id);
+            }
           }
         }
       }
+      vault.shares = newArray;
+      vault.save();
     }
   }
 }
