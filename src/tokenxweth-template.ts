@@ -37,7 +37,7 @@ export function handleTransfer(event: Transfer): void {
               BigInt.fromI32(0),
               event.params.value
             );
-            var shares = vault.shares;
+            let shares = vault.shares;
             shares.push(poolShare.id);
             vault.shares = shares;
             vault.save();
@@ -101,7 +101,7 @@ export function handleTransfer(event: Transfer): void {
                   event.params.value
                 );
                 userReceiverPoolShare.save();
-                var shares = vault.shares;
+                let shares = vault.shares;
                 shares.push(userReceiverPoolShare.id);
                 vault.shares = shares;
                 vault.save();
