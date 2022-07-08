@@ -1,8 +1,9 @@
-import { Address, BigDecimal, log } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, log, BigInt } from "@graphprotocol/graph-ts";
 import { Token, Vault } from "../generated/schema";
 import { Transfer } from "../generated/templates/TokenX/ERC20";
 import {
   ADDRESS_ZERO,
+  createOrUpdatePoolShare,
   getOrCreateUser,
   getPoolShare,
 } from "./helper";
@@ -52,29 +53,44 @@ export function handleTransfer(event: Transfer): void {
       } else {
         let userSenderPoolShare = getPoolShare(
           Address.fromBytes(vault.address),
-          vault.id,
           event.params.from
         );
-        let transferAmount = event.params.value.toBigDecimal()
-        if (userSenderPoolShare.inventoryShare != BigDecimal.fromString("0")) {
- 
-          userSenderPoolShare.inventoryShare = userSenderPoolShare.inventoryShare.minus(
-            transferAmount
-          );
-          userSenderPoolShare.save();
-          }
-          getOrCreateUser(event.params.to);
-          let userReceiverPoolShare = getPoolShare(
-            Address.fromBytes(vault.address),
-            vault.id,
-            event.params.to
-          );
-          userReceiverPoolShare.inventoryShare = userReceiverPoolShare.inventoryShare.plus(
-            transferAmount
-          );
-          userReceiverPoolShare.save();
-        
-      }
+        if(userSenderPoolShare) {
+          let transferAmount = event.params.value.toBigDecimal()
+          if (userSenderPoolShare.inventoryShare != BigDecimal.fromString("0")) {
+  
+            userSenderPoolShare.inventoryShare = userSenderPoolShare.inventoryShare.minus(
+              transferAmount
+            );
+            userSenderPoolShare.save();
+            }
+            getOrCreateUser(event.params.to);
+            let userReceiverPoolShare = getPoolShare(
+              Address.fromBytes(vault.address),
+              event.params.to
+            );
+            if(userReceiverPoolShare) {
+              userReceiverPoolShare.inventoryShare = userReceiverPoolShare.inventoryShare.plus(
+                transferAmount
+              );
+              userReceiverPoolShare.save();
+            }
+            else {
+              userReceiverPoolShare = createOrUpdatePoolShare(
+                Address.fromBytes(vault.address),
+                vault.id,
+                event.params.to,
+                event.params.value,
+                BigInt.fromI32(0)
+              );
+              userReceiverPoolShare.save();
+              var shares = vault.shares;
+              shares.push(userReceiverPoolShare.id);
+              vault.shares = shares;
+              vault.save();
+            }
+        }
+       }
     }
   }
 }
