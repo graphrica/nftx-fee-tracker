@@ -93,25 +93,14 @@ export function getOrUpdateVault(
 
 export function getPoolShare(
   vaultAddress: Address,
-  vaultId: string,
   userAddress: Address
-): PoolShare {
+): PoolShare | null {
   let poolShare = PoolShare.load(
     vaultAddress
       .toHexString()
       .concat("-")
       .concat(userAddress.toHexString())
   );
-  if (!poolShare) {
-    poolShare = createOrUpdatePoolShare(
-      vaultAddress,
-      vaultId,
-      userAddress,
-      BigInt.fromI32(0),
-      BigInt.fromI32(0)
-    );
-    return poolShare;
-  }
   return poolShare;
 }
 

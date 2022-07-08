@@ -46,6 +46,8 @@ eventHandlers:
     handler: handleFeesReceived
   - event: PoolUpdated(uint256,address)
     handler: handlePoolUpdated
+  - event: PoolCreated(uint256,address)
+    handler: handleCreated
 ```
 
 **TokenX & TokenXWeth**

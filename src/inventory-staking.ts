@@ -16,6 +16,7 @@ import {
   updateOrCreateUserVaultFeeAggregate,
   calculateEarningAmount,
   getOrCreateToken,
+  createOrUpdatePoolShare,
 } from "./helper";
 export function handleFeesReceived(event: FeesReceived): void {
   let vault = getVaultFromId(event.params.vaultId);
@@ -72,17 +73,27 @@ export function handleDeposit(event: Deposit): void {
     vault.save();
     let poolShare = getPoolShare(
       Address.fromBytes(vault.address),
-      vault.id,
       event.params.sender
     );
-    poolShare.inventoryShare = poolShare.inventoryShare.plus(
-      event.params.xTokenAmount.toBigDecimal()
-    );
-    poolShare.save();
-    var shares = vault.shares;
-    shares.push(poolShare.id);
-    vault.shares = shares;
-    vault.save();
+    if(poolShare){
+      poolShare.inventoryShare = poolShare.inventoryShare.plus(
+        event.params.xTokenAmount.toBigDecimal()
+      );
+      poolShare.save();
+    }
+    else {
+      poolShare = createOrUpdatePoolShare(
+        Address.fromBytes(vault.address),
+        vault.id,
+        event.params.sender,
+        event.params.xTokenAmount,
+        BigInt.fromI32(0)
+      );
+      var shares = vault.shares;
+      shares.push(poolShare.id);
+      vault.shares = shares;
+      vault.save();
+    }
   }
 }
 
@@ -96,13 +107,15 @@ export function handleWithdraw(event: Withdraw): void {
     vault.save();
     let poolShare = getPoolShare(
       Address.fromBytes(vault.address),
-      vault.id,
       event.params.sender
     );
-    poolShare.inventoryShare = poolShare.inventoryShare.minus(
-      event.params.xTokenAmount.toBigDecimal()
-    );
-    poolShare.save();
+    if(poolShare){
+      poolShare.inventoryShare = poolShare.inventoryShare.minus(
+        event.params.xTokenAmount.toBigDecimal()
+      );
+      poolShare.save();
+    }
+
   }
 }
 
